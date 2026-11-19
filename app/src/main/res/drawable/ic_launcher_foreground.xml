@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <path android:strokeColor="#2EFFB020" android:strokeWidth="1.2" android:pathData="M24,54a30,30 0,1 0,60 0a30,30 0,1 0,-60 0" />
+    <path android:pathData="M76 80 C79 70 81 60 79 51 C77 39 68 31 57 31 C48 31 41 35 36 41 C32 45 29 50 29 56 C29 59 30 61 32 62 C32 58 34 55 37 54 L43 54 C45 61 49 68 55 73 C61 77 68 79 76 80 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:type="linear" android:startX="36" android:startY="31" android:endX="80" android:endY="80"
+                android:startColor="#FFD15C" android:endColor="#FF7A1A" />
+        </aapt:attr>
+    </path>
+    <path android:fillColor="#05070D" android:pathData="M41 45 C47 41 56 40 66 43 C59 44 52 46 45 49 Z" />
+    <path android:fillColor="#05070D" android:pathData="M49.6,47.5a3.4,3.4 0,1 0,6.8 0a3.4,3.4 0,1 0,-6.8 0" />
+    <path android:fillColor="#FFF3D6" android:pathData="M53.1,46.4a1.1,1.1 0,1 0,2.2 0a1.1,1.1 0,1 0,-2.2 0" />
+    <path android:strokeColor="#05070D" android:strokeWidth="1.6" android:strokeLineCap="round" android:pathData="M37 54 C40 52 43 52 46 54" />
+</vector>
