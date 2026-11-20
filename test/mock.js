@@ -78,6 +78,11 @@
         lp_holders: [{percent: '0.97', is_locked: 1}], holders: [{percent: '0.2'}, {percent: '0.1'}], holder_count: '5321'}}})), 300); },
     telegram(id, what) { setTimeout(() => window.hawkCb(id, true, JSON.stringify(what === 'updates' ? {ok: true, result: [{message: {chat: {id: 123456789, first_name: 'Max'}}}]} : {ok: true})), 300); },
     widget() {},
+    wallet(id, what) { setTimeout(() => window.hawkCb(id, true, JSON.stringify(
+      what === 'connect' ? {ok: true, address: '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU', label: 'Phantom'} :
+      what === 'balances' ? {lamports: 1834000000, amount: '1250000000', decimals: 6, ui: 1250} :
+      what === 'quote' ? {outAmount: '41700000', priceImpactPct: '0.0031', requestId: 'x'} :
+      what === 'swap' ? {ok: true, signature: '5abc', address: '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU'} : true)), 400); },
     activate: () => 1, checkAlerts() { setTimeout(() => window.hawkAlertsChecked(0), 300); }, askNotify() {}, copy() {}, share() {}, open() {}, toast() {},
   };
 })();

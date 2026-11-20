@@ -164,6 +164,35 @@ public class MainActivity extends Activity {
             });
         }
 
+        /** In-app swaps (Solana): connect a wallet, read balances, quote, swap. Results go to hawkCb. */
+        @JavascriptInterface
+        public void wallet(final int id, final String what, final String a, final String b, final String c) {
+            pool.execute(() -> {
+                String ok = "true", body;
+                try {
+                    switch (what) {
+                        case "available": body = String.valueOf(Wallet.available(MainActivity.this)); break;
+                        case "connect": body = Wallet.connect(MainActivity.this).toString(); break;
+                        case "balances": body = Wallet.balances(a, b).toString(); break;
+                        case "quote": body = Api.jupOrder(a, b, c, null); break;
+                        case "swap": body = Wallet.swap(MainActivity.this, a, b, c).toString(); break;
+                        case "forget":
+                            Pro.save(MainActivity.this, "wallet_token", "");
+                            Pro.save(MainActivity.this, "wallet_addr", "");
+                            body = "true";
+                            break;
+                        default: throw new IllegalArgumentException("what");
+                    }
+                } catch (Exception e) {
+                    ok = "false";
+                    String m = e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
+                    if (e.getCause() != null && e.getCause().getMessage() != null) m = m + ": " + e.getCause().getMessage();
+                    body = m;
+                }
+                js("window.hawkCb&&hawkCb(" + id + "," + ok + "," + JSONObject.quote(body) + ")");
+            });
+        }
+
         @JavascriptInterface
         public void widget(String json) {
             if (!Pro.isActive()) return;

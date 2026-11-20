@@ -211,3 +211,9 @@ textarea:focus,.inp:focus{border-color:rgba(255,176,32,.5)}
 .act.trade svg{color:#1a0f00}
 .warnbox{background:rgba(255,77,106,.12);border:1px solid rgba(255,77,106,.45);color:#FFB3C0;border-radius:12px;padding:10px 12px;font-size:13px;margin:6px 0 12px}
 .trade-opt small{color:var(--dim)!important;font-weight:600!important}
+.swap{background:linear-gradient(135deg,rgba(255,176,32,.08),rgba(11,15,24,1));border:1px solid rgba(255,176,32,.35);border-radius:16px;padding:12px 12px 10px;margin:4px 0 6px}
+.swap-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px}
+.wrow{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.amt{display:flex;align-items:center;gap:8px}.amt input{flex:1}.amt span{font-weight:700;color:var(--dim)}
+.quote{font-size:13.5px;min-height:20px;margin-top:4px}
+.cta:disabled{opacity:.5}

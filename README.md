@@ -18,9 +18,10 @@ Everything you expect from a DEX tracker, without limits:
 
 ## Trading
 
-Every pool page has a **Trade** button. PoolHawk does not hold keys or funds: it opens the swap in the user's own wallet.
+Every pool page has a **Trade** button. PoolHawk never holds keys or funds.
 
-- Solana: Jupiter swap inside Phantom, the token on pump.fun inside Phantom, or Jupiter in the browser
+- Solana, inside PoolHawk: buy or sell with SOL. Quotes and routing come from the Jupiter Swap API V2 (keyless), which also routes pump.fun tokens. The user's wallet app (Phantom, Solflare or any other wallet that supports the Solana Mobile Wallet Adapter) approves and signs; the signed transaction is landed through Jupiter's `/execute`. Balances come from the public Solana RPC. No fee is added.
+- Solana, in another app: Jupiter swap inside Phantom, the token on pump.fun inside Phantom, or Jupiter in the browser
 - Ethereum, Base, Arbitrum, Polygon, Avalanche: Uniswap inside MetaMask (Phantom for Ethereum, Base and Polygon) or in the browser
 - BNB Chain: PancakeSwap inside MetaMask or in the browser
 - A warning is shown first when the risk check or the security scan found serious red flags

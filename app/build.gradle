@@ -13,8 +13,8 @@ android {
         applicationId 'app.poolhawk'
         minSdk 26
         targetSdk 34
-        versionCode 5
-        versionName '1.4'
+        versionCode 6
+        versionName '1.5'
     }
 
     signingConfigs {
@@ -55,7 +55,8 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 dependencies {
-    // No libraries: the app uses only what Android itself provides.
+    // Solana Mobile Wallet Adapter: lets Phantom, Solflare and other wallets sign swaps; keys never enter PoolHawk
+    implementation 'com.solanamobile:mobile-wallet-adapter-clientlib:2.0.3'
     testImplementation 'junit:junit:4.13.2'
     // real org.json for unit tests (Android's copy is only a stub on the JVM)
     testImplementation 'org.json:json:20231013'

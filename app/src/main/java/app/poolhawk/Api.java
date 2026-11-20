@@ -56,6 +56,51 @@ final class Api {
         return fetch(url, "GET", null);
     }
 
+    static final String JUP = "https://api.jup.ag/swap/v2";
+    static final String RPC = "https://api.mainnet-beta.solana.com";
+
+    /** Jupiter Swap API V2 (keyless): quote/order. */
+    static String jupOrder(String inputMint, String outputMint, String amount, String taker) throws IOException {
+        if (!inputMint.matches("[1-9A-HJ-NP-Za-km-z]{32,44}") || !outputMint.matches("[1-9A-HJ-NP-Za-km-z]{32,44}")
+            || !amount.matches("[0-9]{1,20}") || (taker != null && !taker.matches("[1-9A-HJ-NP-Za-km-z]{32,44}"))) {
+            throw new IOException("bad order");
+        }
+        return fetchJson(JUP + "/order?inputMint=" + inputMint + "&outputMint=" + outputMint + "&amount=" + amount
+            + (taker == null ? "" : "&taker=" + taker), null);
+    }
+
+    static String jupExecute(String body) throws IOException {
+        return fetchJson(JUP + "/execute", body);
+    }
+
+    static String rpc(String body) throws IOException {
+        return fetchJson(RPC, body);
+    }
+
+    private static String fetchJson(String url, String json) throws IOException {
+        HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
+        try {
+            c.setConnectTimeout(15_000);
+            c.setReadTimeout(30_000);
+            c.setRequestProperty("Accept", "application/json");
+            c.setRequestProperty("User-Agent", "PoolHawk/1.5 (Android)");
+            if (json != null) {
+                c.setRequestMethod("POST");
+                c.setDoOutput(true);
+                c.setRequestProperty("Content-Type", "application/json");
+                c.getOutputStream().write(json.getBytes(StandardCharsets.UTF_8));
+            }
+            int code = c.getResponseCode();
+            InputStream in = code < 400 ? c.getInputStream() : c.getErrorStream();
+            String body = in == null ? "" : read(in);
+            if (code == 429) throw new HttpError(429);
+            if (code >= 400 && body.isEmpty()) throw new HttpError(code);
+            return body;
+        } finally {
+            c.disconnect();
+        }
+    }
+
     /** Sends a Telegram message through the user's own bot. */
     static String telegram(String token, String method, String form) throws IOException {
         if (token == null || !token.matches("[0-9]{5,15}:[A-Za-z0-9_\\-]{20,60}")) throw new IOException("bad token");

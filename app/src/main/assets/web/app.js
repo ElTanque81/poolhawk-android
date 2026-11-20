@@ -110,8 +110,28 @@ const T = {
     tr_browser: "Open in your browser",
     tr_mm: "Swap on %1 inside MetaMask",
     tr_none: "Trading links are not available for this network yet.",
-    tr_safe: "You trade in your own wallet. PoolHawk never sees your keys or funds and takes no fee.",
+    tr_safe: "Your wallet signs every trade. PoolHawk never sees your keys or funds and takes no fee.",
     tr_danger: "High risk: the checks found serious warning signs for this token. Only trade if you know what you are doing.",
+    sw_title: "Swap in PoolHawk",
+    sw_sub: "Phantom, Solflare & co. sign · no fee",
+    sw_buy: "Buy",
+    sw_sell: "Sell",
+    sw_go: "Swap with my wallet",
+    sw_nowallet: "No wallet connected",
+    sw_connect: "Connect wallet",
+    sw_opening: "Opening your wallet…",
+    sw_connect_first: "Connect your wallet first.",
+    sw_noroute: "No route found for this token right now.",
+    sw_impact: "price impact",
+    sw_amount: "Enter an amount first.",
+    sw_toomuch: "Not enough SOL (keep a little for network fees).",
+    sw_confirm: "Approve the swap in your wallet…",
+    sw_done: "Swap sent!",
+    sw_view: "View on Solscan",
+    sw_fail: "Swap failed.",
+    sw_err_nowallet: "No Solana wallet app found. Install Phantom or Solflare.",
+    sw_err_cancel: "Cancelled in the wallet.",
+    sw_or: "Or open it in another app:",
     sec_run: "Scan",
     bundle_note: "Bundle: PoolHawk + SpyCheck + SecretSweep Pro together for $9.99 – just mention it in your e-mail.",
     sec_quota: "%1 free scans left today",
@@ -223,8 +243,28 @@ const T = {
     tr_browser: "Im Browser öffnen",
     tr_mm: "Auf %1 in MetaMask tauschen",
     tr_none: "Für dieses Netzwerk gibt es noch keine Handels-Links.",
-    tr_safe: "Du handelst in deiner eigenen Wallet. PoolHawk sieht weder deine Schlüssel noch dein Geld und nimmt keine Gebühr.",
+    tr_safe: "Deine Wallet unterschreibt jeden Trade. PoolHawk sieht weder deine Schlüssel noch dein Geld und nimmt keine Gebühr.",
     tr_danger: "Hohes Risiko: Die Prüfungen haben ernste Warnzeichen für diesen Token gefunden. Handle nur, wenn du weißt, was du tust.",
+    sw_title: "Direkt in PoolHawk tauschen",
+    sw_sub: "Phantom, Solflare & Co. unterschreiben · keine Gebühr",
+    sw_buy: "Kaufen",
+    sw_sell: "Verkaufen",
+    sw_go: "Mit meiner Wallet tauschen",
+    sw_nowallet: "Keine Wallet verbunden",
+    sw_connect: "Wallet verbinden",
+    sw_opening: "Wallet wird geöffnet…",
+    sw_connect_first: "Verbinde zuerst deine Wallet.",
+    sw_noroute: "Für diesen Token gibt es gerade keine Route.",
+    sw_impact: "Preiseinfluss",
+    sw_amount: "Gib zuerst einen Betrag ein.",
+    sw_toomuch: "Nicht genug SOL (etwas für Netzwerkgebühren übrig lassen).",
+    sw_confirm: "Bestätige den Tausch in deiner Wallet…",
+    sw_done: "Tausch gesendet!",
+    sw_view: "Auf Solscan ansehen",
+    sw_fail: "Tausch fehlgeschlagen.",
+    sw_err_nowallet: "Keine Solana-Wallet-App gefunden. Installiere Phantom oder Solflare.",
+    sw_err_cancel: "In der Wallet abgebrochen.",
+    sw_or: "Oder in einer anderen App öffnen:",
     sec_run: "Scannen",
     bundle_note: "Paket: PoolHawk + SpyCheck + SecretSweep Pro zusammen für 9,99 $ – einfach in der E-Mail erwähnen.",
     sec_quota: "Heute noch %1 Gratis-Scans",
@@ -274,7 +314,7 @@ window.hawkCb = (id, ok, body) => {
   const p = pending[id];
   if (!p) return;
   delete pending[id];
-  if (ok) { try { p.res(JSON.parse(body)); } catch (e) { p.rej(new Error('parse')); } } else p.rej(new Error(body === '429' ? 'rate' : 'net'));
+  if (ok) { try { p.res(JSON.parse(body)); } catch (e) { p.rej(new Error('parse')); } } else { const er = new Error(body === '429' ? 'rate' : 'net'); er.detail = body; p.rej(er); }
 };
 function api(path) {
   if (H) return new Promise((res, rej) => { const id = ++reqId; pending[id] = {res, rej}; H.get(id, path); });
@@ -785,6 +825,110 @@ function tradeLinks(p) {
   }
   return out;
 }
+const W = {addr: '', lamports: null, tok: null, dec: null};
+const wcall = (what, a = '', b = '', c = '') => bridgeCall(id => H.wallet(id, what, a, b, c));
+const shortA = a => a ? a.slice(0, 4) + '…' + a.slice(-4) : '';
+function fmtAmt(raw, dec) { if (raw == null || dec == null) return '—'; const v = Number(raw) / Math.pow(10, dec); return v >= 1000 ? v.toLocaleString('en-US', {maximumFractionDigits: 0}) : v.toLocaleString('en-US', {maximumSignificantDigits: 5}); }
+function swapHtml(p) {
+  return `<div class="swap">
+    <div class="swap-head"><b>⚡ ${t('sw_title')}</b><span class="dim" style="font-size:11.5px">${t('sw_sub')}</span></div>
+    <div class="wrow" id="wRow"></div>
+    <div class="seg" id="swSide"><button data-s="buy" class="on">${t('sw_buy')}</button><button data-s="sell">${t('sw_sell')}</button></div>
+    <div id="swBody"></div>
+    <div class="quote" id="swQuote"></div>
+    <button class="cta" id="swGo" style="width:100%;margin-top:6px">${t('sw_go')}</button>
+    <div class="msg" id="swMsg"></div></div>`;
+}
+async function initSwap(p) {
+  let side = 'buy', qTimer = null, lastQ = null;
+  if (W.dec == null) { try { const ti = await api(`/networks/solana/tokens/${p.token}`); W.dec = +(ti.data.attributes.decimals); } catch (e) { W.dec = null; } }
+  W.addr = (H && H.load('wallet_addr')) || '';
+  const msg = (h, cls) => { const m = $('#swMsg'); if (m) m.innerHTML = h ? `<span class="${cls || ''}">${h}</span>` : ''; };
+  const drawWallet = () => {
+    const r = $('#wRow'); if (!r) return;
+    r.innerHTML = W.addr ? `<span>👛 <b class="num">${shortA(W.addr)}</b></span><span class="num dim">${W.lamports != null ? '◎ ' + (W.lamports / 1e9).toFixed(4) : ''}${W.tok != null ? ' · ' + fmtAmt(W.tok, W.dec) + ' ' + esc(p.sym) : ''}</span><button class="link" id="wRef">↻</button>`
+      : `<span class="dim">👛 ${t('sw_nowallet')}</span><button class="btn small amber" id="wCon">${t('sw_connect')}</button>`;
+    const c = $('#wCon'); if (c) c.onclick = connect;
+    const f = $('#wRef'); if (f) f.onclick = loadBal;
+  };
+  const loadBal = async () => {
+    if (!W.addr) return drawWallet();
+    try { const b = await wcall('balances', W.addr, p.token); W.lamports = b.lamports; W.tok = b.amount || '0'; if (b.decimals != null) W.dec = b.decimals; } catch (e) { /* offline */ }
+    drawWallet(); drawBody();
+  };
+  const connect = async () => {
+    msg('<span class="spin"></span> ' + t('sw_opening'));
+    try { const r = await wcall('connect'); W.addr = r.address; msg(''); await loadBal(); } catch (e) { msg(esc(errText(e)), 'down'); }
+  };
+  const rawAmount = () => {
+    const v = parseFloat(($('#swAmt') || {}).value || '0');
+    if (!(v > 0)) return null;
+    if (side === 'buy') return String(Math.floor(v * 1e9));
+    if (W.dec == null) return null;
+    return BigInt(Math.floor(v * Math.pow(10, Math.min(W.dec, 9)))).toString() + '0'.repeat(Math.max(0, W.dec - 9));
+  };
+  const drawBody = () => {
+    const b = $('#swBody'); if (!b) return;
+    if (side === 'buy') {
+      b.innerHTML = `<div class="amt"><input class="inp num" id="swAmt" type="number" inputmode="decimal" step="any" placeholder="0.1"><span>SOL</span></div>
+        <div class="chips in">${[0.05, 0.1, 0.25, 0.5, 1].map(v => `<button class="chip ghost" data-v="${v}">${v} SOL</button>`).join('')}</div>`;
+      b.querySelectorAll('[data-v]').forEach(x => x.onclick = () => { $('#swAmt').value = x.dataset.v; quote(); });
+    } else {
+      b.innerHTML = `<div class="amt"><input class="inp num" id="swAmt" type="number" inputmode="decimal" step="any" placeholder="0"><span>${esc(p.sym)}</span></div>
+        <div class="chips in">${[25, 50, 75, 100].map(v => `<button class="chip ghost" data-p="${v}">${v}%</button>`).join('')}</div>`;
+      b.querySelectorAll('[data-p]').forEach(x => x.onclick = () => {
+        if (W.tok == null || W.dec == null) return msg(t('sw_connect_first'), 'down');
+        const raw = (BigInt(W.tok) * BigInt(x.dataset.p) / 100n);
+        $('#swAmt').value = Number(raw) / Math.pow(10, W.dec); quote(raw.toString());
+      });
+    }
+    $('#swAmt').oninput = () => { clearTimeout(qTimer); qTimer = setTimeout(() => quote(), 600); };
+    $('#swQuote').innerHTML = '';
+  };
+  const mints = () => side === 'buy' ? [Wallet_SOL, p.token] : [p.token, Wallet_SOL];
+  const quote = async (forceRaw) => {
+    const raw = forceRaw || rawAmount(), q = $('#swQuote');
+    lastQ = null;
+    if (!raw || !q) { if (q) q.innerHTML = ''; return; }
+    q.innerHTML = '<span class="spin"></span>';
+    try {
+      const [i, o] = mints();
+      const r = await wcall('quote', i, o, raw);
+      if (!r.outAmount) { q.innerHTML = `<span class="down">${esc(t('sw_noroute'))}</span>`; return; }
+      lastQ = raw;
+      const out = side === 'buy' ? fmtAmt(r.outAmount, W.dec) + ' ' + esc(p.sym) : (Number(r.outAmount) / 1e9).toFixed(4) + ' SOL';
+      const imp = r.priceImpactPct != null ? Math.abs(+r.priceImpactPct * (Math.abs(+r.priceImpactPct) < 1 ? 100 : 1)) : (r.priceImpact != null ? Math.abs(+r.priceImpact) : null);
+      q.innerHTML = `≈ <b class="num">${out}</b>${imp != null && !isNaN(imp) ? ` · <span class="${imp > 5 ? 'down' : 'dim'}">${t('sw_impact')} ${imp.toFixed(2)}%</span>` : ''}`;
+    } catch (e) { q.innerHTML = `<span class="down">${esc(errText(e))}</span>`; }
+  };
+  $('#swSide').onclick = e => { const b = e.target.closest('button'); if (!b) return; side = b.dataset.s; document.querySelectorAll('#swSide button').forEach(x => x.classList.toggle('on', x === b)); drawBody(); };
+  $('#swGo').onclick = async () => {
+    const raw = lastQ || rawAmount();
+    if (!raw) return msg(t('sw_amount'), 'down');
+    if (side === 'buy' && W.lamports != null && Number(raw) > W.lamports - 5e6) return msg(t('sw_toomuch'), 'down');
+    const go = $('#swGo'); go.disabled = true; msg('<span class="spin"></span> ' + t('sw_confirm'));
+    try {
+      const [i, o] = mints();
+      const r = await wcall('swap', i, o, raw);
+      W.addr = r.address || W.addr;
+      if (r.ok) {
+        msg(`✅ ${t('sw_done')} <button class="link" id="swTx">${t('sw_view')}</button>`, 'up');
+        const tx = $('#swTx'); if (tx) tx.onclick = () => H.open(`https://solscan.io/tx/${r.signature}`);
+        setTimeout(loadBal, 4000);
+      } else msg(esc(r.error === 'noroute' ? t('sw_noroute') : t('sw_fail') + ' ' + (r.error || '')), 'down');
+    } catch (e) { msg(esc(errText(e)), 'down'); }
+    go.disabled = false;
+  };
+  drawWallet(); drawBody(); if (W.addr) loadBal();
+}
+const Wallet_SOL = 'So11111111111111111111111111111111111111112';
+function errText(e) {
+  const d = (e && e.detail) || '';
+  if (/nowallet/.test(d)) return t('sw_err_nowallet');
+  if (/declin|reject|cancel|NotSubmitted/i.test(d)) return t('sw_err_cancel');
+  if (e && e.message === 'rate') return t('rate');
+  return t('sw_fail') + (d ? ' (' + d.slice(0, 120) + ')' : '');
+}
 function tradeDialog(p) {
   const links = tradeLinks(p), r = riskOf(p);
   const sec = secCache[key(p)] || '';
@@ -792,11 +936,13 @@ function tradeDialog(p) {
   openModal(`<div class="grabber"></div><h3>⇄ ${t('tr_title', esc(p.sym))}</h3>
     <p>${t('alert_now', fmtPrice(p.price))} · ${t('risk')}: ${riskBadge(r)}</p>
     ${danger ? `<div class="warnbox">⚠️ ${esc(t('tr_danger'))}</div>` : ''}
+    ${p.net === 'solana' && H && p.token ? swapHtml(p) + `<p class="dim" style="font-size:12px;margin:14px 0 6px">${t('sw_or')}</p>` : ''}
     ${links.length ? links.map(l => `<button class="pay trade-opt" data-url="${esc(l[3])}"><small>${esc(l[2])}</small><span style="font-family:inherit;font-size:16px;font-weight:700">${esc(l[1])}</span></button>`).join('')
       : `<div class="empty" style="padding:16px">${esc(t('tr_none'))}</div>`}
     <p class="note">🔐 ${esc(t('tr_safe'))}</p>
     <button class="btn" data-close style="width:100%">${t('close')}</button>`);
   modal.querySelectorAll('.trade-opt').forEach(b => b.onclick = () => { const u = b.dataset.url; if (H) H.open(u); else window.open(u); closeModal(); });
+  if ($('.swap')) initSwap(p);
 }
 
 /* security scan (Pro) via GoPlus */
