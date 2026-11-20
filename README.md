@@ -13,7 +13,13 @@ Market data comes from the free public [GeckoTerminal API](https://www.geckoterm
 
 ## Pro
 
+- Rug alarm: notification when liquidity in a watchlist pool suddenly drops (20, 30 or 50 %)
+- New-pool alerts with your own filter (network, minimum liquidity, maximum risk)
+- Volume-spike alerts when a token trades far above its normal hourly volume
 - Price alerts (above, below, rises by %, falls by %) with notifications, also when the app is closed
+- Every alert can also go to Telegram through your own bot, and all alerts are kept in an in-app history
+- Security scan for each token via the free GoPlus Security API: honeypot, buy/sell tax, mint and freeze authority, owner privileges, locked liquidity, top-holder share
+- Home-screen widget with the first five watchlist tokens
 - New-pool scanner with an automatic rug & risk check
 - Unlimited watchlists and tokens, CSV export
 - Whale tracker: big buys and sells in watchlist pools, with optional notifications
@@ -32,7 +38,7 @@ Pro is unlocked with a license key bound to one device code. Keys are made with 
 
 ## How it is built
 
-A native Android shell (`MainActivity`) shows the web UI from `app/src/main/assets/web` and offers a small bridge for API calls, storage, the license check, sharing and notifications. `Watcher` checks alerts and whale trades; `AlertJob` runs it in the background every 15 minutes. API calls are rate-limited and cached to stay within the free API limits.
+A native Android shell (`MainActivity`) shows the web UI from `app/src/main/assets/web` and offers a small bridge for API calls, storage, the license check, sharing and notifications. `Watcher` checks price alerts, whale trades and the smart alerts (rug, volume spike, new pools), forwards them to Telegram and refreshes the widget (`WatchWidget`); `AlertJob` runs it in the background every 15 minutes, and the app runs it every minute while it is open. `Risk` is the Java copy of the risk heuristic. Network access is limited to the GeckoTerminal API, the GoPlus API and the Telegram Bot API. API calls are rate-limited and cached to stay within the free API limits.
 
 ## Build
 

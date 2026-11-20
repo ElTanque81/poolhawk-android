@@ -43,6 +43,60 @@ final class Api {
             && !path.contains("\\") && path.length() < 2000 && path.matches("[A-Za-z0-9/_\\-.,?=&%:]+");
     }
 
+    /** Security data from GoPlus (free, no key). Only this host is allowed. */
+    static final String GOPLUS = "https://api.gopluslabs.io/api/v1/";
+
+    static boolean validGoPlus(String url) {
+        return url != null && url.startsWith(GOPLUS) && !url.contains("..") && url.length() < 600
+            && url.matches("[A-Za-z0-9/_\\-.,?=&%:]+");
+    }
+
+    static String goPlus(String url) throws IOException {
+        if (!validGoPlus(url)) throw new IOException("bad url");
+        return fetch(url, "GET", null);
+    }
+
+    /** Sends a Telegram message through the user's own bot. */
+    static String telegram(String token, String method, String form) throws IOException {
+        if (token == null || !token.matches("[0-9]{5,15}:[A-Za-z0-9_\\-]{20,60}")) throw new IOException("bad token");
+        if (!method.matches("[A-Za-z]{3,20}")) throw new IOException("bad method");
+        return fetch("https://api.telegram.org/bot" + token + "/" + method, form == null ? "GET" : "POST", form);
+    }
+
+    private static String fetch(String url, String method, String form) throws IOException {
+        HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
+        try {
+            c.setConnectTimeout(15_000);
+            c.setReadTimeout(20_000);
+            c.setRequestMethod(method);
+            c.setRequestProperty("Accept", "application/json");
+            c.setRequestProperty("User-Agent", "PoolHawk/1.1 (Android)");
+            if (form != null) {
+                c.setDoOutput(true);
+                c.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+                c.getOutputStream().write(form.getBytes(StandardCharsets.UTF_8));
+            }
+            int code = c.getResponseCode();
+            if (code != 200) throw new HttpError(code);
+            return read(c.getInputStream());
+        } finally {
+            c.disconnect();
+        }
+    }
+
+    private static String read(InputStream in0) throws IOException {
+        try (InputStream in = in0) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            byte[] buf = new byte[16384];
+            int n;
+            while ((n = in.read(buf)) > 0) {
+                out.write(buf, 0, n);
+                if (out.size() > 8_000_000) throw new IOException("too big");
+            }
+            return out.toString(StandardCharsets.UTF_8.name());
+        }
+    }
+
     static String get(String path) throws IOException {
         if (!validPath(path)) throw new IOException("bad path");
         synchronized (CACHE) {
@@ -71,20 +125,10 @@ final class Api {
             c.setConnectTimeout(15_000);
             c.setReadTimeout(20_000);
             c.setRequestProperty("Accept", "application/json;version=20230302");
-            c.setRequestProperty("User-Agent", "PoolHawk/1.0 (Android)");
+            c.setRequestProperty("User-Agent", "PoolHawk/1.1 (Android)");
             int code = c.getResponseCode();
             if (code != 200) throw new HttpError(code);
-            String body;
-            try (InputStream in = c.getInputStream()) {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                byte[] buf = new byte[16384];
-                int n;
-                while ((n = in.read(buf)) > 0) {
-                    out.write(buf, 0, n);
-                    if (out.size() > 8_000_000) throw new IOException("too big");
-                }
-                body = out.toString(StandardCharsets.UTF_8.name());
-            }
+            String body = read(c.getInputStream());
             synchronized (CACHE) {
                 CACHE.put(path, new Object[] {System.currentTimeMillis(), body});
             }

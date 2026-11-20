@@ -128,6 +128,49 @@ public class MainActivity extends Activity {
             });
         }
 
+        /** Pro security scan: GoPlus token data (honeypot, taxes, mint/freeze authority, holders). */
+        @JavascriptInterface
+        public void goplus(final int id, final String url) {
+            pool.execute(() -> {
+                String ok = "false", body;
+                try {
+                    body = Pro.isActive() ? Api.goPlus(url) : "403";
+                    ok = Pro.isActive() ? "true" : "false";
+                } catch (Api.HttpError e) {
+                    body = String.valueOf(e.code);
+                } catch (Exception e) {
+                    body = "0";
+                }
+                js("window.hawkCb&&hawkCb(" + id + "," + ok + "," + JSONObject.quote(body) + ")");
+            });
+        }
+
+        /** Telegram: "updates" finds the chat id after the user wrote to the bot, "test" sends a test message. */
+        @JavascriptInterface
+        public void telegram(final int id, final String what, final String token, final String chat) {
+            pool.execute(() -> {
+                String ok = "false", body;
+                try {
+                    if ("updates".equals(what)) body = Api.telegram(token, "getUpdates", null);
+                    else body = Api.telegram(token, "sendMessage", "chat_id=" + Watcher.enc(chat)
+                        + "&text=" + Watcher.enc("🦅 PoolHawk: Telegram alerts are on. / Telegram-Alarme sind aktiv."));
+                    ok = "true";
+                } catch (Api.HttpError e) {
+                    body = String.valueOf(e.code);
+                } catch (Exception e) {
+                    body = "0";
+                }
+                js("window.hawkCb&&hawkCb(" + id + "," + ok + "," + JSONObject.quote(body) + ")");
+            });
+        }
+
+        @JavascriptInterface
+        public void widget(String json) {
+            if (!Pro.isActive()) return;
+            Pro.save(MainActivity.this, "widget", json);
+            WatchWidget.refresh(MainActivity.this);
+        }
+
         @JavascriptInterface
         public String load(String key) {
             return Pro.load(MainActivity.this, key);

@@ -72,6 +72,12 @@
     isPro: () => PRO,
     proInfo: () => JSON.stringify({pro: PRO, to: PRO ? 'Max Mustermann' : '', code: '7F3A2-91C0D-4B8E1-A6D25', price: '$9.99', email: 'eltanque81@gmx.de', version: '1.0',
       pay: [['BTC (Bitcoin)', 'bc1qwslmfzxdzy36sup5ncfxr20culuv9y7v9j9lk7'], ['ETH (Ethereum)', '0x7F8d0743D2e796501a9197A1B4c44eCe1863E1d6'], ['BNB (BNB Smart Chain)', '0x7F8d0743D2e796501a9197A1B4c44eCe1863E1d6']]}),
+    goplus(id, url) { setTimeout(() => window.hawkCb(id, true, JSON.stringify(url.includes('solana')
+      ? {code: 1, result: {X: {mintable: {status: '0'}, freezable: {status: '0'}, metadata_mutable: {status: '1'}, holders: [{percent: '0.12'}, {percent: '0.08'}, {percent: '0.05'}], holder_count: '18342'}}}
+      : {code: 1, result: {X: {is_honeypot: '0', buy_tax: '0', sell_tax: '0.03', cannot_sell_all: '0', is_open_source: '1', is_mintable: '0', hidden_owner: '0', transfer_pausable: '0', is_blacklisted: '1',
+        lp_holders: [{percent: '0.97', is_locked: 1}], holders: [{percent: '0.2'}, {percent: '0.1'}], holder_count: '5321'}}})), 300); },
+    telegram(id, what) { setTimeout(() => window.hawkCb(id, true, JSON.stringify(what === 'updates' ? {ok: true, result: [{message: {chat: {id: 123456789, first_name: 'Max'}}}]} : {ok: true})), 300); },
+    widget() {},
     activate: () => 1, checkAlerts() { setTimeout(() => window.hawkAlertsChecked(0), 300); }, askNotify() {}, copy() {}, share() {}, open() {}, toast() {},
   };
 })();

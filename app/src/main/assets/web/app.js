@@ -25,7 +25,7 @@ const T = {
     new_pools: 'New pools', hide_high: 'Hide high risk', new_sub: 'Freshly launched pools with an automatic rug & risk check.',
     whales: 'Whale trades', whale_min: 'Minimum', whale_sub: 'Big buys and sells in your watchlist pools, live.', whale_empty: 'Add pools to your watchlist – their big trades show up here.',
     whale_none: 'No trades above %1 recently.', whale_notify: 'Notify me about whale trades',
-    alerts: 'Price alerts', alerts_sub: 'Get a notification when a price hits your target – also when the app is closed.', alerts_empty: 'No alerts yet.\nOpen a pool and tap “Alert”.',
+    alerts: 'Price alerts', alerts_sub: 'Rug alarm, new-pool alerts with your filter, volume spikes and price alerts – as push and in Telegram, also when the app is closed.', alerts_empty: 'No alerts yet.\nOpen a pool and tap “Alert”.',
     check_now: 'Check now', bg_note: 'Checked in the background about every 15 minutes, and every minute while the app is open.', a_active: 'Active', a_hit: 'Hit %1 at %2', a_paused: 'Paused',
     a_above: 'Price above', a_below: 'Price below', a_up: 'Rises by %', a_down: 'Falls by %', set_alert: 'Set alert', save: 'Save', cancel: 'Cancel', close: 'Close',
     alert_saved: 'Alert saved', alert_value: 'Target', alert_now: 'Now: %1', alerts_checked: 'Checked – %1 triggered',
@@ -39,6 +39,67 @@ const T = {
     locked_title: '%1 is a Pro feature', unlock: 'Unlock Pro', pro_only: 'Pro',
     settings: 'Settings', language: 'Language', about: 'About', version: 'Version', data_src: 'Market data: GeckoTerminal API', disclaimer: 'PoolHawk shows public market data. Nothing in the app is financial advice.',
     mail_subject: 'PoolHawk Pro', mail_body: 'Hi, I would like PoolHawk Pro.\n\nMy device code: %1\nPaid with: \nTransaction ID: \n',
+    smart: "Smart alerts",
+    s_rug: "Rug alarm",
+    s_rug_sub: "Liquidity suddenly drops in a watchlist pool",
+    s_drop: "Drop",
+    s_spike: "Volume spike",
+    s_spike_sub: "Last hour trades far above normal",
+    s_factor: "At least",
+    s_new: "New-pool alert",
+    s_new_sub: "Fresh launches that match your filter",
+    s_minliq: "Min. liquidity",
+    s_maxrisk: "Max. risk",
+    tg_sub: "Get every alert in Telegram too",
+    tg_on: "Alerts also go to Telegram",
+    tg_setup: "Set up",
+    tg_title: "Telegram alerts",
+    tg_s1: "In Telegram, open @BotFather, send /newbot and copy the token.",
+    tg_s2: "Open your new bot and send it any message (e.g. /start).",
+    tg_s3: "Paste the token here and tap “Find”.",
+    tg_find: "Find",
+    tg_enable: "Send alerts to Telegram",
+    tg_test: "Send test",
+    tg_nochat: "No message found – write to your bot first, then tap “Find” again.",
+    tg_found: "Chat found: %1",
+    tg_bad: "That did not work – check the token.",
+    tg_sent: "Test message sent ✓",
+    saved: "Saved",
+    widget_hint: "Home-screen widget: long-press your home screen → Widgets → PoolHawk.",
+    history: "Alert history",
+    history_empty: "No alerts triggered yet.",
+    clear: "Clear",
+    sec: "Security scan",
+    f_sec: "Security scan: honeypot, taxes, mint & freeze, top holders",
+    sec_na: "Not available for this network.",
+    sec_none: "No security data for this token yet.",
+    sec_fail: "Security scan failed – try again later.",
+    sec_ok: "No problems found",
+    sec_warn: "%1 point(s) to check",
+    sec_bad: "%1 serious warning(s)",
+    sec_src: "Data: GoPlus Security. Hints only – not a guarantee.",
+    c_honeypot: "Honeypot",
+    c_tax: "Buy / sell tax",
+    c_sellall: "Can sell everything",
+    c_verified: "Contract verified",
+    c_mint: "Can mint new tokens",
+    c_owner: "Owner can take control / change balances",
+    c_pause: "Transfers can be paused",
+    c_black: "Blacklist function",
+    c_lp: "Liquidity locked",
+    c_top10: "Top 10 holders own",
+    c_holders: "Holders",
+    c_freeze: "Can freeze wallets",
+    c_balance: "Can change balances",
+    c_meta: "Metadata can change",
+    c_fee: "Transfer fee",
+    c_yes: "yes",
+    c_no: "no",
+    f_rug: "Rug alarm when liquidity is pulled",
+    f_newalert: "New-pool alerts with your own filter",
+    f_spike: "Volume-spike alerts",
+    f_tg: "All alerts also in Telegram",
+    f_widget: "Home-screen widget",
     ago_s: '%1s', ago_m: '%1m', ago_h: '%1h', ago_d: '%1d', just_now: 'now', min_tf: 'Minute charts are Pro',
   },
   de: {
@@ -59,7 +120,7 @@ const T = {
     new_pools: 'Neue Pools', hide_high: 'Hohes Risiko ausblenden', new_sub: 'Frisch gestartete Pools mit automatischem Rug- & Risiko-Check.',
     whales: 'Wal-Trades', whale_min: 'Mindestens', whale_sub: 'Große Käufe und Verkäufe in deinen Watchlist-Pools, live.', whale_empty: 'Füge Pools zur Watchlist hinzu – ihre großen Trades erscheinen hier.',
     whale_none: 'Zuletzt keine Trades über %1.', whale_notify: 'Bei Wal-Trades benachrichtigen',
-    alerts: 'Preis-Alarme', alerts_sub: 'Benachrichtigung, sobald ein Preis dein Ziel erreicht – auch wenn die App zu ist.', alerts_empty: 'Noch keine Alarme.\nÖffne einen Pool und tippe auf „Alarm“.',
+    alerts: 'Preis-Alarme', alerts_sub: 'Rug-Alarm, Neue-Pools-Alarm mit Filter, Volumen-Spikes und Preis-Alarme – als Push und in Telegram, auch wenn die App zu ist.', alerts_empty: 'Noch keine Alarme.\nÖffne einen Pool und tippe auf „Alarm“.',
     check_now: 'Jetzt prüfen', bg_note: 'Wird im Hintergrund etwa alle 15 Minuten geprüft, bei offener App jede Minute.', a_active: 'Aktiv', a_hit: 'Erreicht: %1 um %2', a_paused: 'Pausiert',
     a_above: 'Preis über', a_below: 'Preis unter', a_up: 'Steigt um %', a_down: 'Fällt um %', set_alert: 'Alarm setzen', save: 'Speichern', cancel: 'Abbrechen', close: 'Schließen',
     alert_saved: 'Alarm gespeichert', alert_value: 'Ziel', alert_now: 'Jetzt: %1', alerts_checked: 'Geprüft – %1 ausgelöst',
@@ -73,6 +134,67 @@ const T = {
     locked_title: '%1 ist eine Pro-Funktion', unlock: 'Pro freischalten', pro_only: 'Pro',
     settings: 'Einstellungen', language: 'Sprache', about: 'Info', version: 'Version', data_src: 'Marktdaten: GeckoTerminal API', disclaimer: 'PoolHawk zeigt öffentliche Marktdaten. Nichts in der App ist Anlageberatung.',
     mail_subject: 'PoolHawk Pro', mail_body: 'Hallo, ich möchte PoolHawk Pro.\n\nMein Geräte-Code: %1\nBezahlt mit: \nTransaktions-ID: \n',
+    smart: "Smart-Alarme",
+    s_rug: "Rug-Alarm",
+    s_rug_sub: "Liquidität fällt in einem Watchlist-Pool plötzlich",
+    s_drop: "Rückgang",
+    s_spike: "Volumen-Spike",
+    s_spike_sub: "Letzte Stunde weit über normal gehandelt",
+    s_factor: "Mindestens",
+    s_new: "Neue-Pools-Alarm",
+    s_new_sub: "Neue Pools, die zu deinem Filter passen",
+    s_minliq: "Min. Liquidität",
+    s_maxrisk: "Max. Risiko",
+    tg_sub: "Alle Alarme zusätzlich in Telegram",
+    tg_on: "Alarme gehen auch an Telegram",
+    tg_setup: "Einrichten",
+    tg_title: "Telegram-Alarme",
+    tg_s1: "Öffne in Telegram @BotFather, sende /newbot und kopiere den Token.",
+    tg_s2: "Öffne deinen neuen Bot und schick ihm eine Nachricht (z. B. /start).",
+    tg_s3: "Füge den Token hier ein und tippe auf „Finden“.",
+    tg_find: "Finden",
+    tg_enable: "Alarme an Telegram senden",
+    tg_test: "Test senden",
+    tg_nochat: "Keine Nachricht gefunden – schreib zuerst deinem Bot, dann nochmal „Finden“.",
+    tg_found: "Chat gefunden: %1",
+    tg_bad: "Hat nicht geklappt – prüfe den Token.",
+    tg_sent: "Testnachricht gesendet ✓",
+    saved: "Gespeichert",
+    widget_hint: "Homescreen-Widget: Startbildschirm lange drücken → Widgets → PoolHawk.",
+    history: "Alarm-Verlauf",
+    history_empty: "Noch keine Alarme ausgelöst.",
+    clear: "Leeren",
+    sec: "Sicherheits-Scan",
+    f_sec: "Sicherheits-Scan: Honeypot, Steuern, Mint & Freeze, Top-Holder",
+    sec_na: "Für dieses Netzwerk nicht verfügbar.",
+    sec_none: "Für diesen Token gibt es noch keine Sicherheitsdaten.",
+    sec_fail: "Sicherheits-Scan fehlgeschlagen – später erneut versuchen.",
+    sec_ok: "Keine Probleme gefunden",
+    sec_warn: "%1 Punkt(e) prüfen",
+    sec_bad: "%1 ernste Warnung(en)",
+    sec_src: "Daten: GoPlus Security. Nur Hinweise – keine Garantie.",
+    c_honeypot: "Honeypot",
+    c_tax: "Kauf- / Verkaufssteuer",
+    c_sellall: "Alles verkaufbar",
+    c_verified: "Contract verifiziert",
+    c_mint: "Kann neue Tokens erzeugen",
+    c_owner: "Owner kann Kontrolle/Guthaben ändern",
+    c_pause: "Transfers können gestoppt werden",
+    c_black: "Blacklist-Funktion",
+    c_lp: "Liquidität gesperrt",
+    c_top10: "Top-10-Holder besitzen",
+    c_holders: "Holder",
+    c_freeze: "Kann Wallets einfrieren",
+    c_balance: "Kann Guthaben ändern",
+    c_meta: "Metadaten änderbar",
+    c_fee: "Transfergebühr",
+    c_yes: "ja",
+    c_no: "nein",
+    f_rug: "Rug-Alarm, wenn Liquidität abgezogen wird",
+    f_newalert: "Neue-Pools-Alarme mit eigenem Filter",
+    f_spike: "Volumen-Spike-Alarme",
+    f_tg: "Alle Alarme auch in Telegram",
+    f_widget: "Homescreen-Widget",
     ago_s: '%1s', ago_m: '%1m', ago_h: '%1h', ago_d: '%1T', just_now: 'jetzt', min_tf: 'Minuten-Charts sind Pro',
   },
 };
@@ -160,7 +282,7 @@ function parsePools(res) {
       price: num(a.base_token_price_usd), ch: {m5: num(pc.m5), h1: num(pc.h1), h6: num(pc.h6), h24: num(pc.h24)},
       vol: {h1: num(vol.h1), h24: num(vol.h24)}, liq: num(a.reserve_in_usd), fdv: num(a.fdv_usd), mcap: num(a.market_cap_usd),
       tx: a.transactions || {}, created: a.pool_created_at ? Date.parse(a.pool_created_at) : null,
-      locked: num(a.locked_liquidity_percentage), token: bt.address || rid('base_token').replace(/^[^_]+_/, ''),
+      locked: num(a.locked_liquidity_percentage), token: bt.address || rid('base_token').slice(netOf(d).length + 1),
     };
     poolCache[key(p)] = Object.assign(poolCache[key(p)] || {}, p);
     return p;
@@ -383,6 +505,11 @@ async function refreshPrices(items) {
   return out;
 }
 let editMode = false;
+function pushWidget(pools) {
+  if (!H || !isPro() || !pools.length) return;
+  const rows = pools.slice(0, 5).map(p => ({sym: p.sym, price: p.price, ch: p.ch.h24}));
+  H.widget(JSON.stringify({t: Date.now(), rows}));
+}
 async function showWatch() {
   setTimer(null);
   const l = lists(), cur = curList(l);
@@ -427,7 +554,7 @@ async function showWatch() {
   render([]);
   if (editMode) return;
   const load = async () => {
-    try { const pools = await refreshPrices(curList(lists()).items); if (box.isConnected && !editMode) render(pools); } catch (e) { /* keep last prices */ }
+    try { const pools = await refreshPrices(curList(lists()).items); if (box.isConnected && !editMode) render(pools); pushWidget(pools); } catch (e) { /* keep last prices */ }
   };
   await load();
   setTimer(load, 30000);
@@ -505,21 +632,58 @@ function condText(a) {
   if (a.kind === 'below') return t('a_below') + ' ' + fmtPrice(a.value);
   return (a.kind === 'up' ? t('a_up') : t('a_down')).replace('%', a.value + '%') + ' (' + fmtPrice(a.ref) + ')';
 }
+const loadSmart = () => Object.assign({rug: {on: false, drop: 30}, spike: {on: false, factor: 5}, newp: {on: false, net: 'solana', minLiq: 20000, maxRisk: 0}, tg: {on: false, token: '', chat: ''}}, store.load('smart', {}));
+function saveSmart(fn) { const s = loadSmart(); fn(s); store.save('smart', s); return s; }
+const smartOn = s => s.rug.on || s.spike.on || s.newp.on;
+const EV_ICON = {price: '🔔', whale: '🐋', rug: '🚨', spike: '📈', new: '🛰️'};
 function showAlerts() {
   setTimer(null);
   if (!isPro()) {
-    view.innerHTML = lockedView('alerts', 'alerts_sub', `<div class="list">${['HAWK › $0.0042', 'SOL › $250', 'PEPE ‹ $0.0₅9', 'ETH ‹ $3,000'].map(x => `<div class="alert-row"><div class="mid"><b>🔔 ${x}</b><div class="sub">${t('a_active')}</div></div><span class="switch on"></span></div>`).join('')}</div>`);
+    view.innerHTML = lockedView('smart', 'alerts_sub', `<div class="list">${['🚨 HAWK · ' + t('rf_liq_tiny'), '📈 MOON · 8.4×', '🛰️ NOVA/SOL · Liq $48K', '🔔 SOL › $250', '✈️ Telegram'].map(x => `<div class="alert-row"><div class="mid"><b>${x}</b><div class="sub">${t('a_active')}</div></div><span class="switch on"></span></div>`).join('')}</div>`);
     return;
   }
-  const al = loadAlerts();
-  view.innerHTML = `<div class="sec-head"><h2>${t('alerts')} · ${al.length}</h2><button class="link" id="chk">${t('check_now')}</button></div>
+  const al = loadAlerts(), sm = loadSmart(), ev = store.load('events', []);
+  const opt = (group, field, vals, cur, fmt) => vals.map(v => `<button class="chip ghost ${v === cur ? 'on' : ''}" data-g="${group}" data-f="${field}" data-v="${v}">${fmt(v)}</button>`).join('');
+  const nets = NETS.map(n => n[0]);
+  view.innerHTML = `<div class="sec-head"><h2>${t('smart')}</h2><button class="link" id="chk">${t('check_now')}</button></div>
+    <div class="card smart">
+      <div class="set-row"><div><b>🚨 ${t('s_rug')}</b><div class="sub">${t('s_rug_sub')}</div></div><button class="switch ${sm.rug.on ? 'on' : ''}" data-sw="rug"></button></div>
+      ${sm.rug.on ? `<div class="chips in">${t('s_drop')} ${opt('rug', 'drop', [20, 30, 50], sm.rug.drop, v => '-' + v + '%')}</div>` : ''}
+      <div class="set-row"><div><b>📈 ${t('s_spike')}</b><div class="sub">${t('s_spike_sub')}</div></div><button class="switch ${sm.spike.on ? 'on' : ''}" data-sw="spike"></button></div>
+      ${sm.spike.on ? `<div class="chips in">${t('s_factor')} ${opt('spike', 'factor', [3, 5, 10], sm.spike.factor, v => v + '×')}</div>` : ''}
+      <div class="set-row"><div><b>🛰️ ${t('s_new')}</b><div class="sub">${t('s_new_sub')}</div></div><button class="switch ${sm.newp.on ? 'on' : ''}" data-sw="newp"></button></div>
+      ${sm.newp.on ? `<div class="chips in">${opt('newp', 'net', nets, sm.newp.net, v => v === 'all' ? t('all') : netShort(v))}</div>
+        <div class="chips in">${t('s_minliq')} ${opt('newp', 'minLiq', [5000, 20000, 50000, 100000], sm.newp.minLiq, fmtUsd)}</div>
+        <div class="chips in">${t('s_maxrisk')} ${opt('newp', 'maxRisk', [0, 1], sm.newp.maxRisk, v => t(v ? 'r_med' : 'r_low'))}</div>` : ''}
+      <div class="set-row" style="border:0"><div><b>✈️ Telegram</b><div class="sub">${sm.tg.on && sm.tg.chat ? '✓ ' + t('tg_on') : t('tg_sub')}</div></div><button class="btn small amber" id="tgSet">${t('tg_setup')}</button></div>
+    </div>
+    <div class="note" style="margin:0 18px 6px">📱 ${esc(t('widget_hint'))}</div>
+    <div class="sec-head"><h2>${t('alerts')} · ${al.length}</h2></div>
     ${al.length ? `<div class="list">${al.map(a => `<div class="alert-row" data-id="${esc(a.id)}">
       <div class="mid" data-open><b>${esc(a.name)}</b><div class="sub">${esc(condText(a))}</div>
       <div class="sub">${a.hit ? `<span class="hit">✓ ${esc(t('a_hit', fmtPrice(a.hitPrice), new Date(a.hitAt).toLocaleString(settings.lang, {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'})))}</span>` : a.on === false ? t('a_paused') : '<span class="up">● ' + t('a_active') + '</span>'}</div></div>
       ${a.hit ? `<button class="btn small" data-re>↻</button>` : `<button class="switch ${a.on === false ? '' : 'on'}" data-tog></button>`}
-      <button class="x-btn" data-del>✕</button></div>`).join('')}</div>` : `<div class="empty"><div class="big">🔔</div>${esc(t('alerts_empty')).replace('\n', '<br>')}</div>`}
+      <button class="x-btn" data-del>✕</button></div>`).join('')}</div>` : `<div class="empty" style="padding:22px">${esc(t('alerts_empty')).replace('\n', '<br>')}</div>`}
+    <div class="sec-head"><h2>${t('history')}</h2>${ev.length ? `<button class="link" id="evClr">${t('clear')}</button>` : ''}</div>
+    ${ev.length ? `<div class="card" style="padding:4px 14px">${ev.slice(0, 20).map((e, i) => `<div class="trade ev" data-i="${i}"><span style="font-size:18px">${EV_ICON[e.kind] || '🔔'}</span>
+      <span class="w" style="font-family:inherit;color:var(--text);white-space:normal"><b>${esc(e.title.replace(/^\S+\s/, ''))}</b><br><span class="dim" style="font-size:12px">${esc(e.text)}</span></span><span class="a">${ago(e.t)}</span></div>`).join('')}</div>`
+      : `<div class="empty" style="padding:22px">${t('history_empty')}</div>`}
     <div class="foot">${esc(t('bg_note'))}</div>`;
   $('#chk').onclick = () => { if (H) { $('#chk').innerHTML = '<span class="spin"></span>'; H.checkAlerts(); } };
+  view.querySelectorAll('[data-sw]').forEach(b => b.onclick = () => {
+    const g = b.dataset.sw;
+    saveSmart(x => { x[g].on = !x[g].on; if (g === 'newp') { delete x.newp.seen; } });
+    if (H) H.askNotify();
+    showAlerts();
+  });
+  view.querySelectorAll('[data-g]').forEach(b => b.onclick = () => {
+    const raw = b.dataset.v, v = isNaN(+raw) ? raw : +raw;
+    saveSmart(x => { x[b.dataset.g][b.dataset.f] = v; if (b.dataset.f === 'net') delete x.newp.seen; });
+    showAlerts();
+  });
+  $('#tgSet').onclick = telegramDialog;
+  const clr = $('#evClr'); if (clr) clr.onclick = () => { store.save('events', []); showAlerts(); };
+  view.querySelectorAll('.ev').forEach(r => r.onclick = () => { const e = ev[+r.dataset.i]; if (e && e.addr) openPool({net: e.net, addr: e.addr}); });
   view.querySelectorAll('.alert-row').forEach(r => {
     const id = r.dataset.id;
     const upd = fn => { const l = loadAlerts(); const a = l.find(x => x.id === id); if (a) fn(a, l); store.save('alerts', l.filter(Boolean)); showAlerts(); };
@@ -529,8 +693,97 @@ function showAlerts() {
     r.querySelector('[data-open]').onclick = () => { const a = loadAlerts().find(x => x.id === id); if (a) openPool({net: a.net, addr: a.addr, sym: a.sym}); };
   });
 }
-window.hawkAlertsChecked = n => { toast(t('alerts_checked', n)); if (tab === 'alerts' && $('#sheet').hidden) showAlerts(); };
-setInterval(() => { if (H && isPro() && !document.hidden && loadAlerts().some(a => a.on !== false && !a.hit)) H.checkAlerts(); }, 60000);
+function bridgeCall(fn) {
+  return new Promise((res, rej) => { const id = ++reqId; pending[id] = {res, rej}; fn(id); });
+}
+function telegramDialog() {
+  const sm = loadSmart();
+  openModal(`<div class="grabber"></div><h3>✈️ ${t('tg_title')}</h3>
+    <ol class="steps"><li>${t('tg_s1')}</li><li>${t('tg_s2')}</li><li>${t('tg_s3')}</li></ol>
+    <input class="inp num" id="tgTok" placeholder="123456789:AA…" value="${esc(sm.tg.token)}" autocomplete="off" spellcheck="false">
+    <div class="row-btns" style="margin-top:8px"><input class="inp num" id="tgChat" placeholder="Chat ID" value="${esc(sm.tg.chat)}"><button class="btn amber" id="tgFind" style="flex:none">${t('tg_find')}</button></div>
+    <div class="msg" id="tgMsg"></div>
+    <div class="set-row"><span>${t('tg_enable')}</span><button class="switch ${sm.tg.on ? 'on' : ''}" id="tgOn"></button></div>
+    <div class="row-btns"><button class="btn" id="tgTest">${t('tg_test')}</button><button class="cta" id="tgSave">${t('save')}</button></div>`);
+  const msg = (h, ok) => { $('#tgMsg').innerHTML = `<span class="${ok ? 'up' : 'down'}">${esc(h)}</span>`; };
+  let on = sm.tg.on;
+  $('#tgOn').onclick = () => { on = !on; $('#tgOn').classList.toggle('on', on); };
+  $('#tgFind').onclick = async () => {
+    if (!H) return;
+    try {
+      const r = await bridgeCall(id => H.telegram(id, 'updates', $('#tgTok').value.trim(), ''));
+      const ups = (r.result || []).map(u => (u.message || u.channel_post || {}).chat).filter(Boolean);
+      if (!ups.length) return msg(t('tg_nochat'), false);
+      $('#tgChat').value = ups[ups.length - 1].id;
+      msg(t('tg_found', ups[ups.length - 1].first_name || ups[ups.length - 1].title || ''), true);
+    } catch (e) { msg(t('tg_bad'), false); }
+  };
+  $('#tgTest').onclick = async () => {
+    if (!H) return;
+    try { await bridgeCall(id => H.telegram(id, 'test', $('#tgTok').value.trim(), $('#tgChat').value.trim())); msg(t('tg_sent'), true); } catch (e) { msg(t('tg_bad'), false); }
+  };
+  $('#tgSave').onclick = () => {
+    saveSmart(x => { x.tg = {on: on && !!$('#tgChat').value.trim(), token: $('#tgTok').value.trim(), chat: $('#tgChat').value.trim()}; });
+    closeModal(); toast(t('saved')); if (tab === 'alerts') showAlerts();
+  };
+}
+
+/* security scan (Pro) via GoPlus */
+const secCache = {};
+const GP_CHAIN = {eth: '1', bsc: '56', base: '8453', arbitrum: '42161', polygon_pos: '137', avax: '43114', tron: 'tron'};
+async function loadSecurity() {
+  const p = cur, box = $('#sec');
+  if (!box || !p || !isPro()) return;
+  const tok = p.token;
+  let url;
+  if (p.net === 'solana') url = `https://api.gopluslabs.io/api/v1/solana/token_security?contract_addresses=${tok}`;
+  else if (GP_CHAIN[p.net]) url = `https://api.gopluslabs.io/api/v1/token_security/${GP_CHAIN[p.net]}?contract_addresses=${tok}`;
+  if (!url || !tok) { secCache[key(p)] = `<span class="dim">${t('sec_na')}</span>`; box.innerHTML = secCache[key(p)]; return; }
+  try {
+    const r = H ? await bridgeCall(id => H.goplus(id, url)) : await fetch(url).then(x => x.json());
+    if (!cur || key(cur) !== key(p)) return;
+    const res = r && r.result ? (r.result[tok] || r.result[tok.toLowerCase()] || Object.values(r.result)[0]) : null;
+    if (!res) { secCache[key(p)] = `<span class="dim">${t('sec_none')}</span>`; if ($('#sec')) $('#sec').innerHTML = secCache[key(p)]; return; }
+    const checks = securityChecks(res, p.net === 'solana');
+    const bad = checks.filter(c => c[0] === 'bad').length, warn = checks.filter(c => c[0] === 'warn').length;
+    const html = `<div class="sec-sum ${bad ? 'down' : warn ? 'warnc' : 'up'}">${bad ? '❌ ' + t('sec_bad', bad) : warn ? '⚠️ ' + t('sec_warn', warn) : '✅ ' + t('sec_ok')}</div>
+      <ul class="checks">${checks.map(c => `<li class="${c[0]}"><span>${c[0] === 'ok' ? '✅' : c[0] === 'warn' ? '⚠️' : '❌'}</span><span>${esc(c[1])}</span><b class="num">${esc(c[2] || '')}</b></li>`).join('')}</ul>
+      <div class="note">${t('sec_src')}</div>`;
+    secCache[key(p)] = html;
+    if ($('#sec')) $('#sec').innerHTML = html;
+  } catch (e) { if ($('#sec')) $('#sec').innerHTML = `<span class="dim">${t('sec_fail')}</span>`; }
+}
+function securityChecks(r, sol) {
+  const out = [], yes = v => v === '1' || v === 1 || v === true, pct = v => (v == null || v === '' ? null : +v * 100);
+  const top = (r.holders || []).slice(0, 10).reduce((s, h) => s + (+h.percent || 0), 0) * 100;
+  if (sol) {
+    const st = k => r[k] && (r[k].status === '1' || r[k].status === 1);
+    out.push([st('mintable') ? 'bad' : 'ok', t('c_mint'), st('mintable') ? t('c_yes') : t('c_no')]);
+    out.push([st('freezable') ? 'bad' : 'ok', t('c_freeze'), st('freezable') ? t('c_yes') : t('c_no')]);
+    if (r.balance_mutable_authority) out.push([st('balance_mutable_authority') ? 'bad' : 'ok', t('c_balance'), st('balance_mutable_authority') ? t('c_yes') : t('c_no')]);
+    if (r.metadata_mutable) out.push([st('metadata_mutable') ? 'warn' : 'ok', t('c_meta'), st('metadata_mutable') ? t('c_yes') : t('c_no')]);
+    if (r.transfer_fee && r.transfer_fee.current_fee_rate) { const f = +r.transfer_fee.current_fee_rate.fee_rate_bps / 100 || 0; out.push([f > 5 ? 'bad' : f > 0 ? 'warn' : 'ok', t('c_fee'), f + '%']); }
+  } else {
+    out.push([yes(r.is_honeypot) ? 'bad' : 'ok', t('c_honeypot'), yes(r.is_honeypot) ? t('c_yes') : t('c_no')]);
+    const bt = pct(r.buy_tax), stx = pct(r.sell_tax);
+    if (bt != null || stx != null) out.push([(stx || 0) > 10 || (bt || 0) > 10 ? 'bad' : (stx || 0) > 0 || (bt || 0) > 0 ? 'warn' : 'ok', t('c_tax'), `${(bt || 0).toFixed(1)}% / ${(stx || 0).toFixed(1)}%`]);
+    if (r.cannot_sell_all != null) out.push([yes(r.cannot_sell_all) ? 'bad' : 'ok', t('c_sellall'), yes(r.cannot_sell_all) ? t('c_no') : t('c_yes')]);
+    if (r.is_open_source != null) out.push([yes(r.is_open_source) ? 'ok' : 'warn', t('c_verified'), yes(r.is_open_source) ? t('c_yes') : t('c_no')]);
+    if (r.is_mintable != null) out.push([yes(r.is_mintable) ? 'warn' : 'ok', t('c_mint'), yes(r.is_mintable) ? t('c_yes') : t('c_no')]);
+    const owner = yes(r.hidden_owner) || yes(r.can_take_back_ownership) || yes(r.owner_change_balance);
+    out.push([owner ? 'bad' : 'ok', t('c_owner'), owner ? t('c_yes') : t('c_no')]);
+    if (r.transfer_pausable != null) out.push([yes(r.transfer_pausable) ? 'warn' : 'ok', t('c_pause'), yes(r.transfer_pausable) ? t('c_yes') : t('c_no')]);
+    if (r.is_blacklisted != null) out.push([yes(r.is_blacklisted) ? 'warn' : 'ok', t('c_black'), yes(r.is_blacklisted) ? t('c_yes') : t('c_no')]);
+    const lp = (r.lp_holders || []).filter(h => yes(h.is_locked)).reduce((s, h) => s + (+h.percent || 0), 0) * 100;
+    if ((r.lp_holders || []).length) out.push([lp >= 90 ? 'ok' : lp >= 50 ? 'warn' : 'bad', t('c_lp'), lp.toFixed(0) + '%']);
+  }
+  if ((r.holders || []).length) out.push([top > 60 ? 'bad' : top > 35 ? 'warn' : 'ok', t('c_top10'), top.toFixed(1) + '%']);
+  if (r.holder_count) out.push([+r.holder_count < 100 ? 'warn' : 'ok', t('c_holders'), (+r.holder_count).toLocaleString()]);
+  return out;
+}
+
+window.hawkAlertsChecked = n => { toast(t('alerts_checked', n)); if (tab === 'alerts' && $('#sheet').hidden && !$('#modal').innerHTML) showAlerts(); };
+setInterval(() => { if (H && isPro() && !document.hidden && (loadAlerts().some(a => a.on !== false && !a.hit) || smartOn(loadSmart()))) H.checkAlerts(); }, 60000);
 
 function alertDialog(p) {
   if (!isPro()) return showUnlock();
@@ -638,6 +891,7 @@ function renderPool() {
       <div class="bar"><i style="width:${share}%"></i></div>
       <div class="bar-l"><span class="up num">${t('buys')} ${b.toLocaleString()}</span><span class="down num">${t('sells')} ${s.toLocaleString()}</span></div></div>
     <div class="card"><h4>${t('risk')} ${isPro() ? '' : '<span class="badge-pro" style="font-size:9px;padding:2px 7px">PRO</span>'}</h4>${riskHtml}</div>
+    <div class="card"><h4>${t('sec')} ${isPro() ? '' : '<span class="badge-pro" style="font-size:9px;padding:2px 7px">PRO</span>'}</h4><div id="sec">${isPro() ? (secCache[key(p)] || '<span class="spin"></span>') : `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span class="dim" style="font-size:13px">${esc(t('f_sec'))}</span><button class="btn small amber" data-unlock>🔒 ${t('unlock')}</button></div>`}</div></div>
     <div class="card"><h4>${t('trades')}<span class="live">LIVE</span></h4><div id="trd"><span class="spin"></span></div></div>
     <div class="foot">${esc(p.addr || '')}<br>${t('data_src')} · ${esc(t('disclaimer'))}</div>
     <div class="actions">
@@ -679,6 +933,7 @@ async function loadPool(quiet) {
   } catch (e) { if (!quiet) toast(e.message === 'rate' ? t('rate') : t('offline')); }
   loadChart();
   loadTrades();
+  if (isPro() && !secCache[key(p)]) loadSecurity();
 }
 async function loadChart() {
   const p = cur;
@@ -784,7 +1039,7 @@ document.addEventListener('click', e => { if (e.target.closest('[data-unlock]'))
 
 function showUnlock(reason) {
   refreshPro();
-  const feats = [['🔔', 'f_alerts'], ['🛰️', 'f_new'], ['⭐', 'f_lists'], ['🐋', 'f_whales'], ['🕯️', 'f_tf'], ['🛡️', 'f_risk']];
+  const feats = [['🚨', 'f_rug'], ['🛰️', 'f_newalert'], ['📈', 'f_spike'], ['🔔', 'f_alerts'], ['✈️', 'f_tg'], ['🔬', 'f_sec'], ['🛡️', 'f_new'], ['🐋', 'f_whales'], ['📱', 'f_widget'], ['⭐', 'f_lists'], ['🕯️', 'f_tf']];
   if (isPro()) {
     openModal(`<div class="grabber"></div><span class="badge-pro">PRO</span><h3 style="margin-top:10px">✓ ${t('pro_active')}</h3>
       ${info.to ? `<p>${esc(t('licensed_to', info.to))}</p>` : ''}<ul class="feat">${feats.map(([i, k]) => `<li><span>${i}</span><span>${t(k)}</span></li>`).join('')}</ul>

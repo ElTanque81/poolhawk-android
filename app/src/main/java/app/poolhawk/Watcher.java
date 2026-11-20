@@ -138,7 +138,7 @@ final class Watcher {
                     case "up": cond = "+" + trim(v) + "%"; break;
                     default: cond = "-" + trim(v) + "%"; break;
                 }
-                notify(c, "alerts", "🔔 " + a.optString("name") + " " + cond,
+                event(c, "price", "alerts", "🔔 " + a.optString("name") + " " + cond,
                     (de ? "Preis jetzt " : "Price now ") + fmtPrice(p), a.optString("net"), a.optString("addr"));
                 sent++;
             }
@@ -192,7 +192,7 @@ final class Watcher {
                         if (lastSeen == 0 || ts <= lastSeen || shown >= 3) continue;
                         boolean buy = "buy".equals(at.optString("kind"));
                         double usd = at.optDouble("volume_in_usd", 0);
-                        notify(c, "whales", "🐋 " + p[2] + ": " + (buy ? (de ? "Kauf " : "Buy ") : (de ? "Verkauf " : "Sell ")) + fmtUsd(usd),
+                        event(c, "whale", "whales", "🐋 " + p[2] + ": " + (buy ? (de ? "Kauf " : "Buy ") : (de ? "Verkauf " : "Sell ")) + fmtUsd(usd),
                             (de ? "Wallet " : "Wallet ") + shortAddr(at.optString("tx_from_address")), p[0], p[1]);
                         shown++;
                         sent++;
@@ -208,7 +208,197 @@ final class Watcher {
             }
             Pro.save(c, "whale", fresh.toString());
         }
+        // 3) smart alerts: rug, volume spike, new pools; plus the home-screen widget
+        sent += smart(c, de);
         return sent;
+    }
+
+    static List<String[]> watchItems(Context c, int max) {
+        List<String[]> pools = new ArrayList<>();
+        JSONArray lists = array(Pro.load(c, "lists"));
+        for (int i = 0; i < lists.length() && pools.size() < max; i++) {
+            JSONArray items = lists.optJSONObject(i) == null ? null : lists.optJSONObject(i).optJSONArray("items");
+            for (int j = 0; items != null && j < items.length() && pools.size() < max; j++) {
+                JSONObject it = items.optJSONObject(j);
+                if (it == null) continue;
+                String[] p = {it.optString("net"), it.optString("addr"), it.optString("sym", "?"), it.optString("quote", "")};
+                boolean dup = false;
+                for (String[] q : pools) dup |= key(q[0], q[1]).equals(key(p[0], p[1]));
+                if (!dup) pools.add(p);
+            }
+        }
+        return pools;
+    }
+
+    private static double d(JSONObject o, String k) {
+        if (o == null || o.isNull(k)) return Double.NaN;
+        try {
+            return Double.parseDouble(o.optString(k));
+        } catch (Exception e) {
+            return Double.NaN;
+        }
+    }
+
+    private static int smart(Context c, boolean de) {
+        int sent = 0;
+        long now = System.currentTimeMillis();
+        JSONObject cfg = object(Pro.load(c, "smart"));
+        JSONObject rug = cfg.optJSONObject("rug"), spike = cfg.optJSONObject("spike"), np = cfg.optJSONObject("newp");
+        boolean rugOn = rug != null && rug.optBoolean("on"), spikeOn = spike != null && spike.optBoolean("on");
+        JSONObject snap = object(Pro.load(c, "snap"));
+
+        // watchlist pools: one multi call per network
+        List<String[]> items = watchItems(c, 60);
+        Map<String, List<String[]>> byNet = new LinkedHashMap<>();
+        for (String[] it : items) byNet.computeIfAbsent(it[0], k -> new ArrayList<>()).add(it);
+        Map<String, JSONObject> attrs = new HashMap<>();
+        for (Map.Entry<String, List<String[]>> e : byNet.entrySet()) {
+            List<String> addrs = new ArrayList<>();
+            for (String[] it : e.getValue()) if (addrs.size() < 30) addrs.add(it[1]);
+            try {
+                JSONObject res = new JSONObject(Api.get("/networks/" + e.getKey() + "/pools/multi/" + String.join(",", addrs)));
+                JSONArray data = res.optJSONArray("data");
+                for (int i = 0; data != null && i < data.length(); i++) {
+                    JSONObject at = data.getJSONObject(i).getJSONObject("attributes");
+                    attrs.put(key(e.getKey(), at.optString("address")), at);
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        JSONArray rows = new JSONArray();
+        for (String[] it : items) {
+            String k = key(it[0], it[1]);
+            JSONObject at = attrs.get(k);
+            if (at == null) continue;
+            String name = it[2] + (it[3].isEmpty() ? "" : "/" + it[3]);
+            double liq = d(at, "reserve_in_usd");
+            JSONObject vol = at.optJSONObject("volume_usd");
+            JSONObject prev = snap.optJSONObject(k);
+            if (prev == null) prev = new JSONObject();
+            try {
+                if (rugOn && !Double.isNaN(liq) && prev.has("liq")
+                    && Risk.rugPulled(prev.optDouble("liq"), liq, rug.optDouble("drop", 30))) {
+                    double drop = 100 * (1 - liq / prev.optDouble("liq"));
+                    event(c, "rug", "alerts", "🚨 " + name + (de ? ": Liquidität -" : ": liquidity -") + Math.round(drop) + "%",
+                        fmtUsd(prev.optDouble("liq")) + " → " + fmtUsd(liq) + (de ? " · möglicher Rug Pull" : " · possible rug pull"), it[0], it[1]);
+                    sent++;
+                }
+                double h1 = d(vol, "h1"), h24 = d(vol, "h24");
+                if (spikeOn && now - prev.optLong("spikeAt", 0) > 6 * 3600_000L
+                    && Risk.volumeSpike(h1, h24, spike.optDouble("factor", 5))) {
+                    double x = h1 / (h24 / 24.0);
+                    event(c, "spike", "alerts", "📈 " + name + (de ? ": Volumen " : ": volume ") + String.format(Locale.US, "%.1f×", x),
+                        (de ? "Letzte Stunde " : "Last hour ") + fmtUsd(h1) + (de ? " · Ø " : " · avg ") + fmtUsd(h24 / 24.0), it[0], it[1]);
+                    prev.put("spikeAt", now);
+                    sent++;
+                }
+                if (!Double.isNaN(liq)) prev.put("liq", liq);
+                snap.put(k, prev);
+            } catch (Exception ignored) {
+            }
+            if (rows.length() < 5) {
+                try {
+                    JSONObject pc = at.optJSONObject("price_change_percentage");
+                    rows.put(new JSONObject().put("sym", it[2]).put("price", d(at, "base_token_price_usd")).put("ch", d(pc, "h24")));
+                } catch (Exception ignored) {
+                }
+            }
+        }
+
+        // new pools matching the user's filter
+        if (np != null && np.optBoolean("on")) {
+            String net = np.optString("net", "all");
+            double minLiq = np.optDouble("minLiq", 20000);
+            int maxRisk = np.optInt("maxRisk", Risk.LOW);
+            JSONArray seenArr = np.optJSONArray("seen");
+            java.util.LinkedHashSet<String> seen = new java.util.LinkedHashSet<>();
+            for (int i = 0; seenArr != null && i < seenArr.length(); i++) seen.add(seenArr.optString(i));
+            boolean first = seenArr == null || !net.equals(np.optString("seenNet", ""));
+            try {
+                String path = "all".equals(net) ? "/networks/new_pools?include=base_token,network&page=1"
+                    : "/networks/" + net + "/new_pools?include=base_token&page=1";
+                JSONObject res = new JSONObject(Api.get(path));
+                JSONArray data = res.optJSONArray("data");
+                int shown = 0;
+                for (int i = 0; data != null && i < data.length(); i++) {
+                    JSONObject dd = data.getJSONObject(i), at = dd.getJSONObject("attributes");
+                    String id = dd.optString("id");
+                    if (seen.contains(id)) continue;
+                    seen.add(id);
+                    if (first) continue;
+                    double liq = d(at, "reserve_in_usd");
+                    int sc = Risk.score(at, now);
+                    if (Double.isNaN(liq) || liq < minLiq || Risk.level(sc) > maxRisk || shown >= 4) continue;
+                    String pnet = "all".equals(net) ? netOf(dd) : net;
+                    String lvl = de ? new String[] {"niedrig", "mittel", "hoch"}[Risk.level(sc)] : new String[] {"low", "medium", "high"}[Risk.level(sc)];
+                    event(c, "new", "alerts", "🛰️ " + (de ? "Neuer Pool: " : "New pool: ") + at.optString("name"),
+                        "Liq " + fmtUsd(liq) + " · " + (de ? "Risiko " : "risk ") + lvl + " · " + pnet.toUpperCase(Locale.ROOT), pnet, at.optString("address"));
+                    shown++;
+                    sent++;
+                }
+                JSONArray keep = new JSONArray();
+                List<String> all = new ArrayList<>(seen);
+                for (int i = Math.max(0, all.size() - 300); i < all.size(); i++) keep.put(all.get(i));
+                JSONObject fresh = object(Pro.load(c, "smart"));
+                JSONObject fnp = fresh.optJSONObject("newp");
+                if (fnp != null) {
+                    fnp.put("seen", keep);
+                    fnp.put("seenNet", net);
+                    Pro.save(c, "smart", fresh.toString());
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        Pro.save(c, "snap", snap.toString());
+        if (rows.length() > 0) {
+            try {
+                Pro.save(c, "widget", new JSONObject().put("t", now).put("rows", rows).toString());
+            } catch (Exception ignored) {
+            }
+        }
+        WatchWidget.refresh(c);
+        return sent;
+    }
+
+    private static String netOf(JSONObject d) {
+        JSONObject r = d.optJSONObject("relationships");
+        JSONObject n = r == null ? null : r.optJSONObject("network");
+        JSONObject nd = n == null ? null : n.optJSONObject("data");
+        if (nd != null) return nd.optString("id");
+        String id = d.optString("id");
+        int u = id.lastIndexOf('_');
+        return u > 0 ? id.substring(0, u) : id;
+    }
+
+    /** Records an alert in the in-app history, shows a notification and forwards it to Telegram if set up. */
+    static void event(Context c, String kind, String channel, String title, String text, String net, String addr) {
+        JSONArray ev = array(Pro.load(c, "events"));
+        JSONArray out = new JSONArray();
+        try {
+            out.put(new JSONObject().put("t", System.currentTimeMillis()).put("kind", kind).put("title", title)
+                .put("text", text).put("net", net).put("addr", addr));
+        } catch (Exception ignored) {
+        }
+        for (int i = 0; i < ev.length() && out.length() < 50; i++) out.put(ev.opt(i));
+        Pro.save(c, "events", out.toString());
+        notify(c, channel, title, text, net, addr);
+        JSONObject tg = object(Pro.load(c, "smart")).optJSONObject("tg");
+        if (tg != null && tg.optBoolean("on") && !tg.optString("token").isEmpty() && !tg.optString("chat").isEmpty()) {
+            try {
+                String link = "https://www.geckoterminal.com/" + net + "/pools/" + addr;
+                Api.telegram(tg.optString("token"), "sendMessage", "chat_id=" + enc(tg.optString("chat"))
+                    + "&disable_web_page_preview=true&text=" + enc("🦅 PoolHawk\n" + title + "\n" + text + "\n" + link));
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    static String enc(String s) {
+        try {
+            return java.net.URLEncoder.encode(s, "UTF-8");
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     private static String trim(double v) {
