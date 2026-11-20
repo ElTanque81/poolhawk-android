@@ -102,6 +102,16 @@ const T = {
     f_widget: "Home-screen widget",
     tg_sub_free: "Get your price alerts in Telegram – free",
     tg_free_note: "Free: your price alerts go to Telegram. Pro adds rug alarms, new pools, volume spikes and whales.",
+    a_trade: "Trade",
+    tr_title: "Trade %1",
+    tr_phantom: "Swap with Jupiter inside your Phantom wallet",
+    tr_pump_yes: "pump.fun token – open in Phantom",
+    tr_pump_maybe: "Open on pump.fun in Phantom (pump.fun tokens only)",
+    tr_browser: "Open in your browser",
+    tr_mm: "Swap on %1 inside MetaMask",
+    tr_none: "Trading links are not available for this network yet.",
+    tr_safe: "You trade in your own wallet. PoolHawk never sees your keys or funds and takes no fee.",
+    tr_danger: "High risk: the checks found serious warning signs for this token. Only trade if you know what you are doing.",
     sec_run: "Scan",
     bundle_note: "Bundle: PoolHawk + SpyCheck + SecretSweep Pro together for $9.99 – just mention it in your e-mail.",
     sec_quota: "%1 free scans left today",
@@ -205,6 +215,16 @@ const T = {
     f_widget: "Homescreen-Widget",
     tg_sub_free: "Deine Preis-Alarme in Telegram – gratis",
     tg_free_note: "Free: deine Preis-Alarme gehen an Telegram. Pro sendet zusätzlich Rug-Alarme, neue Pools, Volumen-Spikes und Wale.",
+    a_trade: "Handeln",
+    tr_title: "%1 handeln",
+    tr_phantom: "Mit Jupiter in deiner Phantom-Wallet tauschen",
+    tr_pump_yes: "pump.fun-Token – in Phantom öffnen",
+    tr_pump_maybe: "Auf pump.fun in Phantom öffnen (nur pump.fun-Tokens)",
+    tr_browser: "Im Browser öffnen",
+    tr_mm: "Auf %1 in MetaMask tauschen",
+    tr_none: "Für dieses Netzwerk gibt es noch keine Handels-Links.",
+    tr_safe: "Du handelst in deiner eigenen Wallet. PoolHawk sieht weder deine Schlüssel noch dein Geld und nimmt keine Gebühr.",
+    tr_danger: "Hohes Risiko: Die Prüfungen haben ernste Warnzeichen für diesen Token gefunden. Handle nur, wenn du weißt, was du tust.",
     sec_run: "Scannen",
     bundle_note: "Paket: PoolHawk + SpyCheck + SecretSweep Pro zusammen für 9,99 $ – einfach in der E-Mail erwähnen.",
     sec_quota: "Heute noch %1 Gratis-Scans",
@@ -742,6 +762,43 @@ function telegramDialog() {
   };
 }
 
+/* trading: opens the user's own wallet / DEX – PoolHawk never touches keys or funds */
+const UNI_CHAIN = {eth: 'mainnet', base: 'base', arbitrum: 'arbitrum', polygon_pos: 'polygon', avax: 'avalanche'};
+function tradeLinks(p) {
+  const tok = p.token, e = encodeURIComponent, out = [];
+  if (!tok) return out;
+  if (p.net === 'solana') {
+    const jup = `https://jup.ag/swap/SOL-${tok}`;
+    out.push(['phantom', '👻 Phantom', t('tr_phantom'), `https://phantom.app/ul/browse/${e(jup)}?ref=${e('https://jup.ag')}`]);
+    const pf = `https://pump.fun/coin/${tok}`;
+    out.push(['pump', '💊 pump.fun', /pump$/i.test(tok) || /pump/i.test(p.dex || '') ? t('tr_pump_yes') : t('tr_pump_maybe'), `https://phantom.app/ul/browse/${e(pf)}?ref=${e('https://pump.fun')}`]);
+    out.push(['jup', '🪐 Jupiter', t('tr_browser'), jup]);
+  } else if (p.net === 'bsc') {
+    const u = `https://pancakeswap.finance/swap?chain=bsc&outputCurrency=${tok}`;
+    out.push(['mm', '🦊 MetaMask', t('tr_mm', 'PancakeSwap'), `https://link.metamask.io/dapp/${u.replace('https://', '')}`]);
+    out.push(['web', '🥞 PancakeSwap', t('tr_browser'), u]);
+  } else if (UNI_CHAIN[p.net]) {
+    const u = `https://app.uniswap.org/swap?chain=${UNI_CHAIN[p.net]}&outputCurrency=${tok}`;
+    out.push(['mm', '🦊 MetaMask', t('tr_mm', 'Uniswap'), `https://link.metamask.io/dapp/app.uniswap.org/#/swap?chain=${UNI_CHAIN[p.net]}&outputCurrency=${tok}`]);
+    if (['eth', 'base', 'polygon_pos'].includes(p.net)) out.push(['phantom', '👻 Phantom', t('tr_mm', 'Uniswap').replace('MetaMask', 'Phantom'), `https://phantom.app/ul/browse/${e(u)}?ref=${e('https://app.uniswap.org')}`]);
+    out.push(['web', '🦄 Uniswap', t('tr_browser'), u]);
+  }
+  return out;
+}
+function tradeDialog(p) {
+  const links = tradeLinks(p), r = riskOf(p);
+  const sec = secCache[key(p)] || '';
+  const danger = r.level === 'high' || /sec-sum down/.test(sec);
+  openModal(`<div class="grabber"></div><h3>⇄ ${t('tr_title', esc(p.sym))}</h3>
+    <p>${t('alert_now', fmtPrice(p.price))} · ${t('risk')}: ${riskBadge(r)}</p>
+    ${danger ? `<div class="warnbox">⚠️ ${esc(t('tr_danger'))}</div>` : ''}
+    ${links.length ? links.map(l => `<button class="pay trade-opt" data-url="${esc(l[3])}"><small>${esc(l[2])}</small><span style="font-family:inherit;font-size:16px;font-weight:700">${esc(l[1])}</span></button>`).join('')
+      : `<div class="empty" style="padding:16px">${esc(t('tr_none'))}</div>`}
+    <p class="note">🔐 ${esc(t('tr_safe'))}</p>
+    <button class="btn" data-close style="width:100%">${t('close')}</button>`);
+  modal.querySelectorAll('.trade-opt').forEach(b => b.onclick = () => { const u = b.dataset.url; if (H) H.open(u); else window.open(u); closeModal(); });
+}
+
 /* security scan (Pro) via GoPlus */
 const secCache = {};
 const SEC_FREE = 3;
@@ -863,6 +920,7 @@ const ICON = {
   bell: '<svg viewBox="0 0 24 24"><path d="M12 22a2.5 2.5 0 0 0 2.4-2h-4.8a2.5 2.5 0 0 0 2.4 2Zm7-6V11a7 7 0 0 0-5.5-6.8V3a1.5 1.5 0 0 0-3 0v1.2A7 7 0 0 0 5 11v5l-2 2v1h18v-1l-2-2Z"/></svg>',
   copy: '<svg viewBox="0 0 24 24"><path d="M16 1H6a2 2 0 0 0-2 2v13h2V3h10V1Zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16h-9V7h9v14Z"/></svg>',
   web: '<svg viewBox="0 0 24 24"><path d="M14 3v2h3.6l-9.8 9.8 1.4 1.4L19 6.4V10h2V3h-7ZM19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2v7Z"/></svg>',
+  trade: '<svg viewBox="0 0 24 24"><path d="M7 7h11.2l-2.6-2.6L17 3l5 5-5 5-1.4-1.4L18.2 9H7V7Zm10 10H5.8l2.6 2.6L7 21l-5-5 5-5 1.4 1.4L5.8 15H17v2Z"/></svg>',
   share: '<svg viewBox="0 0 24 24"><path d="M18 16a3 3 0 0 0-2.4 1.2l-6.8-3.5a3 3 0 0 0 0-1.4l6.8-3.5A3 3 0 1 0 15 7l-6.8 3.5a3 3 0 1 0 0 3L15 17a3 3 0 1 0 3-1Z"/></svg>',
 };
 function openPool(p) {
@@ -909,7 +967,8 @@ function renderPool() {
     <div class="card"><h4>${t('sec')}</h4><div id="sec">${secCache[key(p)] || (isPro() ? '<span class="spin"></span>' : `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span class="dim" style="font-size:13px">${esc(t('f_sec'))}<br><span class="warnc">${esc(secLeft() > 0 ? t('sec_quota', secLeft()) : t('sec_used'))}</span></span><button class="btn small amber" id="secRun">🔬 ${t('sec_run')}</button></div>`)}</div></div>
     <div class="card"><h4>${t('trades')}<span class="live">LIVE</span></h4><div id="trd"><span class="spin"></span></div></div>
     <div class="foot">${esc(p.addr || '')}<br>${t('data_src')} · ${esc(t('disclaimer'))}</div>
-    <div class="actions">
+    <div class="actions five">
+      <button class="act trade" id="aTrade">${ICON.trade}${t('a_trade')}</button>
       <button class="act hot" id="aAlert">${ICON.bell}${t('a_alert')}</button>
       <button class="act" id="aCopy">${ICON.copy}${t('a_copy')}</button>
       <button class="act" id="aWeb">${ICON.web}${t('a_web')}</button>
@@ -923,6 +982,7 @@ function renderPool() {
     document.querySelectorAll('.tf').forEach(x => x.classList.toggle('on', x === b2));
     loadChart();
   };
+  $('#aTrade').onclick = () => tradeDialog(cur);
   $('#aAlert').onclick = () => alertDialog(cur);
   const sr = $('#secRun');
   if (sr) sr.onclick = () => {

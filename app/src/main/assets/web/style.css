@@ -206,3 +206,8 @@ textarea:focus,.inp:focus{border-color:rgba(255,176,32,.5)}
 .checks li.bad b{color:var(--down)}.checks li.warn b{color:var(--amber)}
 .btn.small{white-space:nowrap}
 .tg-card{margin-top:8px;border-color:rgba(55,213,255,.35);background:linear-gradient(135deg,rgba(55,213,255,.08),rgba(11,15,24,1))}
+.actions.five{grid-template-columns:repeat(5,1fr);gap:6px}
+.act.trade{background:linear-gradient(135deg,#FFD15C,#FF7A1A);color:#1a0f00;border-color:transparent}
+.act.trade svg{color:#1a0f00}
+.warnbox{background:rgba(255,77,106,.12);border:1px solid rgba(255,77,106,.45);color:#FFB3C0;border-radius:12px;padding:10px 12px;font-size:13px;margin:6px 0 12px}
+.trade-opt small{color:var(--dim)!important;font-weight:600!important}

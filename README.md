@@ -16,6 +16,15 @@ Everything you expect from a DEX tracker, without limits:
 - Price alerts (above, below, rises by %, falls by %) with notifications, also when the app is closed, and in Telegram through your own bot
 - Security scan via the free GoPlus Security API (honeypot, buy/sell tax, mint and freeze authority, owner privileges, locked liquidity, top-holder share): 3 scans a day
 
+## Trading
+
+Every pool page has a **Trade** button. PoolHawk does not hold keys or funds: it opens the swap in the user's own wallet.
+
+- Solana: Jupiter swap inside Phantom, the token on pump.fun inside Phantom, or Jupiter in the browser
+- Ethereum, Base, Arbitrum, Polygon, Avalanche: Uniswap inside MetaMask (Phantom for Ethereum, Base and Polygon) or in the browser
+- BNB Chain: PancakeSwap inside MetaMask or in the browser
+- A warning is shown first when the risk check or the security scan found serious red flags
+
 ## Pro ($4.99 one-time)
 
 What other DEX trackers don't do:
