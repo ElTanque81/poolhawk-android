@@ -25,7 +25,7 @@ const T = {
     new_pools: 'New pools', hide_high: 'Hide high risk', new_sub: 'Freshly launched pools with an automatic rug & risk check.',
     whales: 'Whale trades', whale_min: 'Minimum', whale_sub: 'Big buys and sells in your watchlist pools, live.', whale_empty: 'Add pools to your watchlist – their big trades show up here.',
     whale_none: 'No trades above %1 recently.', whale_notify: 'Notify me about whale trades',
-    alerts: 'Price alerts', alerts_sub: 'Rug alarm, new-pool alerts with your filter, volume spikes and price alerts – as push and in Telegram, also when the app is closed.', alerts_empty: 'No alerts yet.\nOpen a pool and tap “Alert”.',
+    alerts: 'Price alerts', alerts_sub: 'Rug alarm, new-pool alerts with your filter and volume spikes – as push and in Telegram, also when the app is closed.', alerts_empty: 'No alerts yet.\nOpen a pool and tap “Alert”.',
     check_now: 'Check now', bg_note: 'Checked in the background about every 15 minutes, and every minute while the app is open.', a_active: 'Active', a_hit: 'Hit %1 at %2', a_paused: 'Paused',
     a_above: 'Price above', a_below: 'Price below', a_up: 'Rises by %', a_down: 'Falls by %', set_alert: 'Set alert', save: 'Save', cancel: 'Cancel', close: 'Close',
     alert_saved: 'Alert saved', alert_value: 'Target', alert_now: 'Now: %1', alerts_checked: 'Checked – %1 triggered',
@@ -100,6 +100,12 @@ const T = {
     f_spike: "Volume-spike alerts",
     f_tg: "All alerts also in Telegram",
     f_widget: "Home-screen widget",
+    sec_run: "Scan",
+    bundle_note: "Bundle: PoolHawk + SpyCheck + SecretSweep Pro together for $9.99 – just mention it in your e-mail.",
+    sec_quota: "%1 free scans left today",
+    sec_used: "Free scans for today used up – Pro scans without limit.",
+    f_sec_unl: "Unlimited security scans (Free: 3 per day)",
+    free_note: "Free includes: trending, new pools, search, all charts, unlimited watchlists, price alerts, risk check and 3 security scans a day.",
     ago_s: '%1s', ago_m: '%1m', ago_h: '%1h', ago_d: '%1d', just_now: 'now', min_tf: 'Minute charts are Pro',
   },
   de: {
@@ -120,7 +126,7 @@ const T = {
     new_pools: 'Neue Pools', hide_high: 'Hohes Risiko ausblenden', new_sub: 'Frisch gestartete Pools mit automatischem Rug- & Risiko-Check.',
     whales: 'Wal-Trades', whale_min: 'Mindestens', whale_sub: 'Große Käufe und Verkäufe in deinen Watchlist-Pools, live.', whale_empty: 'Füge Pools zur Watchlist hinzu – ihre großen Trades erscheinen hier.',
     whale_none: 'Zuletzt keine Trades über %1.', whale_notify: 'Bei Wal-Trades benachrichtigen',
-    alerts: 'Preis-Alarme', alerts_sub: 'Rug-Alarm, Neue-Pools-Alarm mit Filter, Volumen-Spikes und Preis-Alarme – als Push und in Telegram, auch wenn die App zu ist.', alerts_empty: 'Noch keine Alarme.\nÖffne einen Pool und tippe auf „Alarm“.',
+    alerts: 'Preis-Alarme', alerts_sub: 'Rug-Alarm, Neue-Pools-Alarm mit Filter und Volumen-Spikes – als Push und in Telegram, auch wenn die App zu ist.', alerts_empty: 'Noch keine Alarme.\nÖffne einen Pool und tippe auf „Alarm“.',
     check_now: 'Jetzt prüfen', bg_note: 'Wird im Hintergrund etwa alle 15 Minuten geprüft, bei offener App jede Minute.', a_active: 'Aktiv', a_hit: 'Erreicht: %1 um %2', a_paused: 'Pausiert',
     a_above: 'Preis über', a_below: 'Preis unter', a_up: 'Steigt um %', a_down: 'Fällt um %', set_alert: 'Alarm setzen', save: 'Speichern', cancel: 'Abbrechen', close: 'Schließen',
     alert_saved: 'Alarm gespeichert', alert_value: 'Ziel', alert_now: 'Jetzt: %1', alerts_checked: 'Geprüft – %1 ausgelöst',
@@ -195,6 +201,12 @@ const T = {
     f_spike: "Volumen-Spike-Alarme",
     f_tg: "Alle Alarme auch in Telegram",
     f_widget: "Homescreen-Widget",
+    sec_run: "Scannen",
+    bundle_note: "Paket: PoolHawk + SpyCheck + SecretSweep Pro zusammen für 9,99 $ – einfach in der E-Mail erwähnen.",
+    sec_quota: "Heute noch %1 Gratis-Scans",
+    sec_used: "Gratis-Scans für heute verbraucht – Pro scannt ohne Limit.",
+    f_sec_unl: "Unbegrenzte Sicherheits-Scans (Free: 3 pro Tag)",
+    free_note: "Gratis enthalten: Trends, neue Pools, Suche, alle Charts, unbegrenzte Watchlists, Preis-Alarme, Risiko-Check und 3 Sicherheits-Scans pro Tag.",
     ago_s: '%1s', ago_m: '%1m', ago_h: '%1h', ago_d: '%1T', just_now: 'jetzt', min_tf: 'Minuten-Charts sind Pro',
   },
 };
@@ -446,7 +458,6 @@ async function showTrending() {
 
 async function showNew() {
   setTimer(null);
-  if (!isPro()) { view.innerHTML = lockedView('new_pools', 'new_sub', fakeRows(7)); return; }
   view.innerHTML = netChips(settings.newNet) +
     `<div class="sec-head"><h2>${t('new_pools')}</h2><button class="link" id="hh">${settings.hideHigh ? '☑' : '☐'} ${t('hide_high')}</button></div><div id="nl">${skeleton(8)}</div>`;
   view.querySelector('.chips').onclick = e => { const b = e.target.closest('.chip'); if (b) { settings.newNet = b.dataset.v; saveSettings(); showNew(); } };
@@ -485,7 +496,6 @@ function toggleWatch(p) {
   const found = l.find(x => x.items.some(i => key(i) === k));
   if (found) { found.items = found.items.filter(i => key(i) !== k); saveLists(l); toast(t('watch_rm')); return false; }
   const total = l.reduce((n, x) => n + x.items.length, 0);
-  if (!isPro() && total >= FREE_LIMIT) { showUnlock(t('watch_limit', FREE_LIMIT)); return false; }
   cur.items.push({net: p.net, addr: p.addr, sym: p.sym, quote: p.quote, name: p.name, img: p.img});
   saveLists(l);
   toast(t('watch_add'));
@@ -514,10 +524,10 @@ async function showWatch() {
   setTimer(null);
   const l = lists(), cur = curList(l);
   const listChips = l.map((x, i) => [String(i), x.name || t('my_list')]);
-  if (isPro()) listChips.push(['add', '＋ ' + t('new_list')]);
-  view.innerHTML = (l.length > 1 || isPro() ? chips(listChips, String(Math.min(settings.list, l.length - 1)), 'ghost') : '') +
-    `<div class="sec-head"><h2>${esc(cur.name || t('my_list'))} · ${cur.items.length}${isPro() ? '' : '/' + FREE_LIMIT}</h2>
-     <span><button class="link" id="wEdit">${editMode ? t('done') : t('edit')}</button> &nbsp; <button class="link" id="wExp">${t('export')}${isPro() ? '' : ' 🔒'}</button></span></div><div id="wl"></div>`;
+  listChips.push(['add', '＋ ' + t('new_list')]);
+  view.innerHTML = (true ? chips(listChips, String(Math.min(settings.list, l.length - 1)), 'ghost') : '') +
+    `<div class="sec-head"><h2>${esc(cur.name || t('my_list'))} · ${cur.items.length}</h2>
+     <span><button class="link" id="wEdit">${editMode ? t('done') : t('edit')}</button> &nbsp; <button class="link" id="wExp">${t('export')}</button></span></div><div id="wl"></div>`;
   const ch = view.querySelector('.chips');
   if (ch) ch.onclick = e => {
     const b = e.target.closest('.chip');
@@ -570,7 +580,6 @@ function newListDialog() {
   };
 }
 function exportLists() {
-  if (!isPro()) return showUnlock();
   const rows = [['list', 'symbol', 'quote', 'network', 'pool_address', 'price_usd', 'change_24h_pct', 'liquidity_usd', 'volume_24h_usd', 'url']];
   lists().forEach(l => l.items.forEach(i => {
     const p = poolCache[key(i)] || i;
@@ -638,15 +647,14 @@ const smartOn = s => s.rug.on || s.spike.on || s.newp.on;
 const EV_ICON = {price: '🔔', whale: '🐋', rug: '🚨', spike: '📈', new: '🛰️'};
 function showAlerts() {
   setTimer(null);
-  if (!isPro()) {
+  if (false) {
     view.innerHTML = lockedView('smart', 'alerts_sub', `<div class="list">${['🚨 HAWK · ' + t('rf_liq_tiny'), '📈 MOON · 8.4×', '🛰️ NOVA/SOL · Liq $48K', '🔔 SOL › $250', '✈️ Telegram'].map(x => `<div class="alert-row"><div class="mid"><b>${x}</b><div class="sub">${t('a_active')}</div></div><span class="switch on"></span></div>`).join('')}</div>`);
     return;
   }
   const al = loadAlerts(), sm = loadSmart(), ev = store.load('events', []);
   const opt = (group, field, vals, cur, fmt) => vals.map(v => `<button class="chip ghost ${v === cur ? 'on' : ''}" data-g="${group}" data-f="${field}" data-v="${v}">${fmt(v)}</button>`).join('');
   const nets = NETS.map(n => n[0]);
-  view.innerHTML = `<div class="sec-head"><h2>${t('smart')}</h2><button class="link" id="chk">${t('check_now')}</button></div>
-    <div class="card smart">
+  const smartHtml = isPro() ? `<div class="card smart">
       <div class="set-row"><div><b>🚨 ${t('s_rug')}</b><div class="sub">${t('s_rug_sub')}</div></div><button class="switch ${sm.rug.on ? 'on' : ''}" data-sw="rug"></button></div>
       ${sm.rug.on ? `<div class="chips in">${t('s_drop')} ${opt('rug', 'drop', [20, 30, 50], sm.rug.drop, v => '-' + v + '%')}</div>` : ''}
       <div class="set-row"><div><b>📈 ${t('s_spike')}</b><div class="sub">${t('s_spike_sub')}</div></div><button class="switch ${sm.spike.on ? 'on' : ''}" data-sw="spike"></button></div>
@@ -657,7 +665,9 @@ function showAlerts() {
         <div class="chips in">${t('s_maxrisk')} ${opt('newp', 'maxRisk', [0, 1], sm.newp.maxRisk, v => t(v ? 'r_med' : 'r_low'))}</div>` : ''}
       <div class="set-row" style="border:0"><div><b>✈️ Telegram</b><div class="sub">${sm.tg.on && sm.tg.chat ? '✓ ' + t('tg_on') : t('tg_sub')}</div></div><button class="btn small amber" id="tgSet">${t('tg_setup')}</button></div>
     </div>
-    <div class="note" style="margin:0 18px 6px">📱 ${esc(t('widget_hint'))}</div>
+    <div class="note" style="margin:0 18px 6px">📱 ${esc(t('widget_hint'))}</div>` : lockedView('smart', 'alerts_sub', `<div class="list">${['🚨 ' + t('s_rug'), '🛰️ ' + t('s_new'), '📈 ' + t('s_spike'), '✈️ Telegram'].map(x => `<div class="alert-row"><div class="mid"><b>${x}</b><div class="sub">${t('a_active')}</div></div><span class="switch on"></span></div>`).join('')}</div>`);
+  view.innerHTML = `<div class="sec-head"><h2>${t('smart')}</h2><button class="link" id="chk">${t('check_now')}</button></div>
+    ${smartHtml}
     <div class="sec-head"><h2>${t('alerts')} · ${al.length}</h2></div>
     ${al.length ? `<div class="list">${al.map(a => `<div class="alert-row" data-id="${esc(a.id)}">
       <div class="mid" data-open><b>${esc(a.name)}</b><div class="sub">${esc(condText(a))}</div>
@@ -681,10 +691,10 @@ function showAlerts() {
     saveSmart(x => { x[b.dataset.g][b.dataset.f] = v; if (b.dataset.f === 'net') delete x.newp.seen; });
     showAlerts();
   });
-  $('#tgSet').onclick = telegramDialog;
+  if ($('#tgSet')) $('#tgSet').onclick = telegramDialog;
   const clr = $('#evClr'); if (clr) clr.onclick = () => { store.save('events', []); showAlerts(); };
   view.querySelectorAll('.ev').forEach(r => r.onclick = () => { const e = ev[+r.dataset.i]; if (e && e.addr) openPool({net: e.net, addr: e.addr}); });
-  view.querySelectorAll('.alert-row').forEach(r => {
+  view.querySelectorAll('.alert-row[data-id]').forEach(r => {
     const id = r.dataset.id;
     const upd = fn => { const l = loadAlerts(); const a = l.find(x => x.id === id); if (a) fn(a, l); store.save('alerts', l.filter(Boolean)); showAlerts(); };
     const tog = r.querySelector('[data-tog]'); if (tog) tog.onclick = () => upd(a => { a.on = a.on === false; });
@@ -730,10 +740,13 @@ function telegramDialog() {
 
 /* security scan (Pro) via GoPlus */
 const secCache = {};
+const SEC_FREE = 3;
+function secQuota() { const d = new Date().toISOString().slice(0, 10), q = store.load('secq', {}); return q.day === d ? q : {day: d, n: 0}; }
+const secLeft = () => Math.max(0, SEC_FREE - secQuota().n);
 const GP_CHAIN = {eth: '1', bsc: '56', base: '8453', arbitrum: '42161', polygon_pos: '137', avax: '43114', tron: 'tron'};
 async function loadSecurity() {
   const p = cur, box = $('#sec');
-  if (!box || !p || !isPro()) return;
+  if (!box || !p) return;
   const tok = p.token;
   let url;
   if (p.net === 'solana') url = `https://api.gopluslabs.io/api/v1/solana/token_security?contract_addresses=${tok}`;
@@ -783,10 +796,9 @@ function securityChecks(r, sol) {
 }
 
 window.hawkAlertsChecked = n => { toast(t('alerts_checked', n)); if (tab === 'alerts' && $('#sheet').hidden && !$('#modal').innerHTML) showAlerts(); };
-setInterval(() => { if (H && isPro() && !document.hidden && (loadAlerts().some(a => a.on !== false && !a.hit) || smartOn(loadSmart()))) H.checkAlerts(); }, 60000);
+setInterval(() => { if (H && !document.hidden && (loadAlerts().some(a => a.on !== false && !a.hit) || (isPro() && smartOn(loadSmart())))) H.checkAlerts(); }, 60000);
 
 function alertDialog(p) {
-  if (!isPro()) return showUnlock();
   let kind = 'above';
   const def = k => (k === 'above' ? +(p.price * 1.1).toPrecision(4) : k === 'below' ? +(p.price * 0.9).toPrecision(4) : 10);
   openModal(`<div class="grabber"></div><h3>🔔 ${t('set_alert')} · ${esc(p.sym)}</h3><p>${t('alert_now', fmtPrice(p.price))}</p>
@@ -852,7 +864,6 @@ const ICON = {
 function openPool(p) {
   if (!p || !p.addr) return;
   cur = Object.assign({ch: {}, vol: {}, tx: {}}, poolCache[key(p)] || {}, p);
-  if (TFS.find(x => x[0] === curTf)[3] && !isPro()) curTf = '1h';
   sheet.hidden = false;
   sheet.scrollTop = 0;
   renderPool();
@@ -868,7 +879,7 @@ function renderPool() {
   const tx = p.tx.h24 || {};
   const b = tx.buys || 0, s = tx.sells || 0, share = b + s ? (b / (b + s)) * 100 : 50;
   const r = riskOf(p);
-  const riskHtml = isPro()
+  const riskHtml = true
     ? `<div class="risk-big"><span class="risk ${r.level}" style="font-size:13px;margin:0">${t('r_' + r.level)}</span><div class="meter"><i style="left:calc(${Math.min(100, r.score / 10 * 100)}% - 2px)"></i></div><b class="num">${r.score}/10</b></div>
        <ul class="reasons">${r.flags.filter(f => f[0] !== 0).map(f => `<li>${esc(t(f[1]))}</li>`).join('') || `<li>${t('rf_none')}</li>`}</ul><div class="note">${esc(t('risk_note'))}</div>`
     : `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span class="dim" style="font-size:13px">${esc(t('f_risk'))}</span><button class="btn small amber" data-unlock>🔒 ${t('unlock')}</button></div>`;
@@ -878,7 +889,7 @@ function renderPool() {
       <button class="star ${inWatch(p) ? 'on' : ''}" id="shStar">${ICON.star}</button></div>
     <div class="hero"><span class="price num">${fmtPrice(p.price)}</span><span class="chg num">${fmtPct(p.ch.h24)}</span></div>
     <div class="periods">${[['5M', 'm5'], ['1H', 'h1'], ['6H', 'h6'], ['24H', 'h24']].map(([l, k]) => `<div class="period"><small>${l}</small><span class="num">${fmtPct(p.ch[k])}</span></div>`).join('')}</div>
-    <div class="chart-box"><div class="tfs">${TFS.map(([l, , , pr]) => `<button class="tf ${l === curTf ? 'on' : ''}" data-tf="${l}">${l}${pr && !isPro() ? '<span class="lock">🔒</span>' : ''}</button>`).join('')}</div><canvas id="cv"></canvas></div>
+    <div class="chart-box"><div class="tfs">${TFS.map(([l, , , pr]) => `<button class="tf ${l === curTf ? 'on' : ''}" data-tf="${l}">${l}</button>`).join('')}</div><canvas id="cv"></canvas></div>
     <div class="grid">
       <div class="stat"><small>${t('liquidity')}</small><b class="num">${fmtUsd(p.liq)}</b></div>
       <div class="stat"><small>${t('vol24')}</small><b class="num">${fmtUsd(p.vol.h24)}</b></div>
@@ -890,12 +901,12 @@ function renderPool() {
     <div class="card"><h4>${t('txns24')}<span class="num" style="color:var(--text)">${(b + s).toLocaleString()}</span></h4>
       <div class="bar"><i style="width:${share}%"></i></div>
       <div class="bar-l"><span class="up num">${t('buys')} ${b.toLocaleString()}</span><span class="down num">${t('sells')} ${s.toLocaleString()}</span></div></div>
-    <div class="card"><h4>${t('risk')} ${isPro() ? '' : '<span class="badge-pro" style="font-size:9px;padding:2px 7px">PRO</span>'}</h4>${riskHtml}</div>
-    <div class="card"><h4>${t('sec')} ${isPro() ? '' : '<span class="badge-pro" style="font-size:9px;padding:2px 7px">PRO</span>'}</h4><div id="sec">${isPro() ? (secCache[key(p)] || '<span class="spin"></span>') : `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span class="dim" style="font-size:13px">${esc(t('f_sec'))}</span><button class="btn small amber" data-unlock>🔒 ${t('unlock')}</button></div>`}</div></div>
+    <div class="card"><h4>${t('risk')}</h4>${riskHtml}</div>
+    <div class="card"><h4>${t('sec')}</h4><div id="sec">${secCache[key(p)] || (isPro() ? '<span class="spin"></span>' : `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span class="dim" style="font-size:13px">${esc(t('f_sec'))}<br><span class="warnc">${esc(secLeft() > 0 ? t('sec_quota', secLeft()) : t('sec_used'))}</span></span><button class="btn small amber" id="secRun">🔬 ${t('sec_run')}</button></div>`)}</div></div>
     <div class="card"><h4>${t('trades')}<span class="live">LIVE</span></h4><div id="trd"><span class="spin"></span></div></div>
     <div class="foot">${esc(p.addr || '')}<br>${t('data_src')} · ${esc(t('disclaimer'))}</div>
     <div class="actions">
-      <button class="act ${isPro() ? 'hot' : ''}" id="aAlert">${ICON.bell}${t('a_alert')}${isPro() ? '' : ' 🔒'}</button>
+      <button class="act hot" id="aAlert">${ICON.bell}${t('a_alert')}</button>
       <button class="act" id="aCopy">${ICON.copy}${t('a_copy')}</button>
       <button class="act" id="aWeb">${ICON.web}${t('a_web')}</button>
       <button class="act" id="aShare">${ICON.share}${t('a_share')}</button></div>`;
@@ -904,12 +915,18 @@ function renderPool() {
   $('.tfs').onclick = e => {
     const b2 = e.target.closest('.tf'); if (!b2) return;
     const tf = TFS.find(x => x[0] === b2.dataset.tf);
-    if (tf[3] && !isPro()) return showUnlock(t('min_tf'));
     curTf = tf[0];
     document.querySelectorAll('.tf').forEach(x => x.classList.toggle('on', x === b2));
     loadChart();
   };
   $('#aAlert').onclick = () => alertDialog(cur);
+  const sr = $('#secRun');
+  if (sr) sr.onclick = () => {
+    if (secLeft() <= 0) return showUnlock(t('sec_used'));
+    const q = secQuota(); q.n++; store.save('secq', q);
+    $('#sec').innerHTML = '<span class="spin"></span>';
+    loadSecurity();
+  };
   $('#aCopy').onclick = () => copy(cur.token || cur.addr);
   const url = () => `https://www.geckoterminal.com/${cur.net}/pools/${cur.addr}`;
   $('#aWeb').onclick = () => { if (H) H.open(url()); else window.open(url()); };
@@ -1039,7 +1056,7 @@ document.addEventListener('click', e => { if (e.target.closest('[data-unlock]'))
 
 function showUnlock(reason) {
   refreshPro();
-  const feats = [['🚨', 'f_rug'], ['🛰️', 'f_newalert'], ['📈', 'f_spike'], ['🔔', 'f_alerts'], ['✈️', 'f_tg'], ['🔬', 'f_sec'], ['🛡️', 'f_new'], ['🐋', 'f_whales'], ['📱', 'f_widget'], ['⭐', 'f_lists'], ['🕯️', 'f_tf']];
+  const feats = [['🚨', 'f_rug'], ['🛰️', 'f_newalert'], ['📈', 'f_spike'], ['✈️', 'f_tg'], ['🐋', 'f_whales'], ['📱', 'f_widget'], ['🔬', 'f_sec_unl']];
   if (isPro()) {
     openModal(`<div class="grabber"></div><span class="badge-pro">PRO</span><h3 style="margin-top:10px">✓ ${t('pro_active')}</h3>
       ${info.to ? `<p>${esc(t('licensed_to', info.to))}</p>` : ''}<ul class="feat">${feats.map(([i, k]) => `<li><span>${i}</span><span>${t(k)}</span></li>`).join('')}</ul>
@@ -1050,6 +1067,8 @@ function showUnlock(reason) {
     <h3 style="margin-top:10px">${t('pro_title')}</h3>
     ${reason ? `<p style="color:var(--amber)">${esc(reason)}</p>` : ''}
     <p>${esc(t('pro_lead', info.price))}</p>
+    <p class="dim" style="font-size:12.5px">${esc(t('free_note'))}</p>
+    <p style="color:var(--amber);font-size:13px">🎁 ${esc(t('bundle_note'))}</p>
     <ul class="feat">${feats.map(([i, k]) => `<li><span>${i}</span><span>${t(k)}</span></li>`).join('')}</ul>
     <p>${esc(t('pro_how', info.price, info.email))}</p>
     ${(info.pay || []).map(([n, a]) => `<button class="pay" data-copy="${esc(a)}"><small>${esc(n)}</small><span>${esc(a)}</span></button>`).join('')}

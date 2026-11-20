@@ -6,25 +6,27 @@ Market data comes from the free public [GeckoTerminal API](https://www.geckoterm
 
 ## Free
 
-- Trending pools per network, sortable by hot, volume, gainers and losers
-- Search by token, pair or contract address
-- Pool page: price, 5m/1h/6h/24h change, candlestick chart (1h, 4h, 1D), liquidity, FDV, buys vs. sells, latest trades
-- One watchlist with up to 5 tokens
+Everything you expect from a DEX tracker, without limits:
 
-## Pro
+- Trending pools per network, sortable by hot, volume, gainers and losers
+- New pools with an automatic rug & risk check
+- Search by token, pair or contract address
+- Pool page: price, 5m/1h/6h/24h change, candlestick charts from 1 minute to 1 day, liquidity, FDV, buys vs. sells, latest trades, risk check
+- Unlimited watchlists with CSV export
+- Price alerts (above, below, rises by %, falls by %) with notifications, also when the app is closed
+- Security scan via the free GoPlus Security API (honeypot, buy/sell tax, mint and freeze authority, owner privileges, locked liquidity, top-holder share): 3 scans a day
+
+## Pro ($4.99 one-time)
+
+What other DEX trackers don't do:
 
 - Rug alarm: notification when liquidity in a watchlist pool suddenly drops (20, 30 or 50 %)
 - New-pool alerts with your own filter (network, minimum liquidity, maximum risk)
 - Volume-spike alerts when a token trades far above its normal hourly volume
-- Price alerts (above, below, rises by %, falls by %) with notifications, also when the app is closed
-- Every alert can also go to Telegram through your own bot, and all alerts are kept in an in-app history
-- Security scan for each token via the free GoPlus Security API: honeypot, buy/sell tax, mint and freeze authority, owner privileges, locked liquidity, top-holder share
-- Home-screen widget with the first five watchlist tokens
-- New-pool scanner with an automatic rug & risk check
-- Unlimited watchlists and tokens, CSV export
+- Every alert also in Telegram through your own bot, plus an in-app alert history
 - Whale tracker: big buys and sells in watchlist pools, with optional notifications
-- Minute charts (1m, 5m, 15m)
-- Risk check on every pool
+- Home-screen widget with the first five watchlist tokens
+- Unlimited security scans
 
 The risk check gives hints from on-chain numbers (liquidity, age, FDV vs. liquidity, buy/sell ratio, price spikes, locked liquidity). It is not a guarantee and not financial advice.
 

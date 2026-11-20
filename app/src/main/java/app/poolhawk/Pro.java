@@ -7,7 +7,7 @@ import android.provider.Settings;
 /** Free / Pro and saved data. Pro is unlocked with a license key that the seller issues for this phone's device code. */
 final class Pro {
     static final String SELLER_EMAIL = "eltanque81@gmx.de";
-    static final String PRICE = "$9.99";
+    static final String PRICE = "$4.99";
     static final String[][] PAY = {
         {"BTC (Bitcoin)", "bc1qwslmfzxdzy36sup5ncfxr20culuv9y7v9j9lk7"},
         {"ETH (Ethereum)", "0x7F8d0743D2e796501a9197A1B4c44eCe1863E1d6"},

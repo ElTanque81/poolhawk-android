@@ -35,10 +35,6 @@ final class Watcher {
     static void schedule(Context c) {
         JobScheduler js = (JobScheduler) c.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         if (js == null) return;
-        if (!Pro.isActive()) {
-            js.cancel(JOB_ID);
-            return;
-        }
         for (JobInfo j : js.getAllPendingJobs()) if (j.getId() == JOB_ID) return;
         js.schedule(new JobInfo.Builder(JOB_ID, new ComponentName(c, AlertJob.class))
             .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
@@ -94,7 +90,6 @@ final class Watcher {
 
     /** Runs one check. Returns how many notifications were sent. */
     static synchronized int run(Context c) {
-        if (!Pro.isActive()) return 0;
         boolean de = "de".equals(object(Pro.load(c, "settings")).optString("lang", Locale.getDefault().getLanguage()));
         int sent = 0;
 
@@ -157,6 +152,9 @@ final class Watcher {
             }
             Pro.save(c, "alerts", fresh.toString());
         }
+
+        // everything below is Pro: whale trades, smart alerts, widget
+        if (!Pro.isActive()) return sent;
 
         // 2) whale trades in watchlist pools
         JSONObject whale = object(Pro.load(c, "whale"));
@@ -383,7 +381,7 @@ final class Watcher {
         Pro.save(c, "events", out.toString());
         notify(c, channel, title, text, net, addr);
         JSONObject tg = object(Pro.load(c, "smart")).optJSONObject("tg");
-        if (tg != null && tg.optBoolean("on") && !tg.optString("token").isEmpty() && !tg.optString("chat").isEmpty()) {
+        if (Pro.isActive() && tg != null && tg.optBoolean("on") && !tg.optString("token").isEmpty() && !tg.optString("chat").isEmpty()) {
             try {
                 String link = "https://www.geckoterminal.com/" + net + "/pools/" + addr;
                 Api.telegram(tg.optString("token"), "sendMessage", "chat_id=" + enc(tg.optString("chat"))

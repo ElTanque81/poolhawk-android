@@ -128,14 +128,14 @@ public class MainActivity extends Activity {
             });
         }
 
-        /** Pro security scan: GoPlus token data (honeypot, taxes, mint/freeze authority, holders). */
+        /** Security scan (Free: 3 a day, Pro: unlimited): GoPlus token data (honeypot, taxes, mint/freeze authority, holders). */
         @JavascriptInterface
         public void goplus(final int id, final String url) {
             pool.execute(() -> {
                 String ok = "false", body;
                 try {
-                    body = Pro.isActive() ? Api.goPlus(url) : "403";
-                    ok = Pro.isActive() ? "true" : "false";
+                    body = Api.goPlus(url);
+                    ok = "true";
                 } catch (Api.HttpError e) {
                     body = String.valueOf(e.code);
                 } catch (Exception e) {
