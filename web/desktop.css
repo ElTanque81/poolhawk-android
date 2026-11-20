@@ -1,0 +1,19 @@
+/* PoolHawk web: wide screens get the list on the left and the pool on the right */
+.desk-empty{display:none}
+@media (min-width:960px){
+  body{padding-bottom:0}
+  .top,main{width:470px}
+  .search{width:442px}
+  .tabs{width:470px;right:auto;border-right:1px solid var(--line)}
+  main{min-height:100vh;border-right:1px solid var(--line);padding-bottom:90px}
+  .sheet{left:470px;animation:none;border-left:1px solid var(--line);z-index:15}
+  .actions{left:470px}
+  .modal{align-items:center}
+  .dlg{border-radius:22px;border-bottom:1px solid var(--line2);max-width:480px}
+  .toast{left:235px;bottom:90px}
+  .desk-empty{display:flex;position:fixed;left:470px;right:0;top:0;bottom:0;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:var(--faint);text-align:center;padding:40px}
+  .desk-empty svg{width:120px;height:120px;filter:drop-shadow(0 0 30px rgba(255,140,30,.35))}
+  .desk-empty h2{color:var(--text);margin:0;font-size:24px}
+  .desk-empty .dl{color:var(--amber);text-decoration:none;font-weight:700}
+  .sh-top .icon-btn#shBack{opacity:.6}
+}

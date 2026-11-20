@@ -40,6 +40,17 @@ What other DEX trackers don't do:
 
 The risk check gives hints from on-chain numbers (liquidity, age, FDV vs. liquidity, buy/sell ratio, price spikes, locked liquidity). It is not a guarantee and not financial advice.
 
+## Web version (PC and Mac)
+
+`web/` holds the browser version, served at eltanque.netlify.app/poolhawk/. It runs the same `app.js` and `style.css` as the Android app; `web/bridge-web.js` replaces the native bridge:
+
+- market data straight from GeckoTerminal and GoPlus, with a Netlify proxy as fallback (`/api/gt`, `/api/goplus`)
+- swaps on Solana through the Wallet Standard (Phantom, Solflare and other browser wallets sign; Jupiter Swap API V2 quotes and lands)
+- Pro with the same license keys (device code per browser), checked in JavaScript exactly like `License.java`
+- alerts every minute while the tab is open, as browser notifications and in Telegram (through `/api/tg`)
+
+`web/desktop.css` puts the list on the left and the pool on the right on wide screens. To update the site, copy `app/src/main/assets/web/app.js`, `style.css` and everything in `web/` to `public/poolhawk/` in the website repo.
+
 ## Languages
 
 English and German, switchable in the settings. All texts are in `app/src/main/assets/web/app.js`.

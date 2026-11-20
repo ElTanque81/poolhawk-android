@@ -2,6 +2,7 @@
 'use strict';
 
 const H = window.Hawk || null;
+const WEB = !!(H && H.platform === 'web');
 const $ = (s, el = document) => el.querySelector(s);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 
@@ -132,6 +133,10 @@ const T = {
     sw_err_nowallet: "No Solana wallet app found. Install Phantom or Solflare.",
     sw_err_cancel: "Cancelled in the wallet.",
     sw_or: "Or open it in another app:",
+    bg_note_web: "In the browser, alerts are checked every minute while this tab is open (browser notifications and Telegram). For alerts around the clock, use the Android app.",
+    sw_err_nowallet_web: "No Solana wallet found in this browser. Install the Phantom or Solflare extension and reload the page.",
+    tr_web: "Open in a new tab – connect your wallet extension there",
+    pro_how_web: "Pay %1 in crypto to one of these addresses, then send your device code to %2. You get a license key for this browser (it stays valid as long as you do not clear the browser data).",
     sec_run: "Scan",
     bundle_note: "Bundle: PoolHawk + SpyCheck + SecretSweep Pro together for $9.99 – just mention it in your e-mail.",
     sec_quota: "%1 free scans left today",
@@ -265,6 +270,10 @@ const T = {
     sw_err_nowallet: "Keine Solana-Wallet-App gefunden. Installiere Phantom oder Solflare.",
     sw_err_cancel: "In der Wallet abgebrochen.",
     sw_or: "Oder in einer anderen App öffnen:",
+    bg_note_web: "Im Browser werden Alarme jede Minute geprüft, solange dieser Tab offen ist (Browser-Benachrichtigung und Telegram). Für Alarme rund um die Uhr nimm die Android-App.",
+    sw_err_nowallet_web: "Keine Solana-Wallet in diesem Browser gefunden. Installiere die Erweiterung Phantom oder Solflare und lade die Seite neu.",
+    tr_web: "In neuem Tab öffnen – dort deine Wallet-Erweiterung verbinden",
+    pro_how_web: "Bezahle %1 per Krypto an eine dieser Adressen und schicke dann deinen Geräte-Code an %2. Du bekommst einen Lizenzschlüssel für diesen Browser (gültig, solange du die Browserdaten nicht löschst).",
     sec_run: "Scannen",
     bundle_note: "Paket: PoolHawk + SpyCheck + SecretSweep Pro zusammen für 9,99 $ – einfach in der E-Mail erwähnen.",
     sec_quota: "Heute noch %1 Gratis-Scans",
@@ -428,6 +437,7 @@ function errorBox(e, again) {
   setTimeout(() => { const b = document.getElementById(id); if (b) b.onclick = again; });
   return `<div class="empty"><div class="big">📡</div>${esc(e && e.message === 'rate' ? t('rate') : t('offline'))}<br><br><button class="btn small amber" id="${id}">${t('retry')}</button></div>`;
 }
+window.toast = msg => toast(msg);
 function toast(msg) {
   const el = $('#toast');
   el.textContent = msg;
@@ -728,7 +738,7 @@ function showAlerts() {
         <div class="chips in">${t('s_minliq')} ${opt('newp', 'minLiq', [5000, 20000, 50000, 100000], sm.newp.minLiq, fmtUsd)}</div>
         <div class="chips in">${t('s_maxrisk')} ${opt('newp', 'maxRisk', [0, 1], sm.newp.maxRisk, v => t(v ? 'r_med' : 'r_low'))}</div>` : ''}
     </div>
-    <div class="note" style="margin:0 18px 6px">📱 ${esc(t('widget_hint'))}</div>` : lockedView('smart', 'alerts_sub', `<div class="list">${['🚨 ' + t('s_rug'), '🛰️ ' + t('s_new'), '📈 ' + t('s_spike'), '✈️ Telegram'].map(x => `<div class="alert-row"><div class="mid"><b>${x}</b><div class="sub">${t('a_active')}</div></div><span class="switch on"></span></div>`).join('')}</div>`);
+    ${WEB ? '' : `<div class="note" style="margin:0 18px 6px">📱 ${esc(t('widget_hint'))}</div>`}` : lockedView('smart', 'alerts_sub', `<div class="list">${['🚨 ' + t('s_rug'), '🛰️ ' + t('s_new'), '📈 ' + t('s_spike'), '✈️ Telegram'].map(x => `<div class="alert-row"><div class="mid"><b>${x}</b><div class="sub">${t('a_active')}</div></div><span class="switch on"></span></div>`).join('')}</div>`);
   view.innerHTML = `<div class="card tg-card"><div class="set-row" style="border:0"><div><b>✈️ ${t('tg_title')}</b><div class="sub">${sm.tg.on && sm.tg.chat ? '✓ ' + t('tg_on') : t(isPro() ? 'tg_sub' : 'tg_sub_free')}</div></div><button class="btn small amber" id="tgSet">${t('tg_setup')}</button></div></div>
     <div class="sec-head"><h2>${t('smart')}</h2><button class="link" id="chk">${t('check_now')}</button></div>
     ${smartHtml}
@@ -742,7 +752,7 @@ function showAlerts() {
     ${ev.length ? `<div class="card" style="padding:4px 14px">${ev.slice(0, 20).map((e, i) => `<div class="trade ev" data-i="${i}"><span style="font-size:18px">${EV_ICON[e.kind] || '🔔'}</span>
       <span class="w" style="font-family:inherit;color:var(--text);white-space:normal"><b>${esc(e.title.replace(/^\S+\s/, ''))}</b><br><span class="dim" style="font-size:12px">${esc(e.text)}</span></span><span class="a">${ago(e.t)}</span></div>`).join('')}</div>`
       : `<div class="empty" style="padding:22px">${t('history_empty')}</div>`}
-    <div class="foot">${esc(t('bg_note'))}</div>`;
+    <div class="foot">${esc(t(WEB ? 'bg_note_web' : 'bg_note'))}</div>`;
   $('#chk').onclick = () => { if (H) { $('#chk').innerHTML = '<span class="spin"></span>'; H.checkAlerts(); } };
   view.querySelectorAll('[data-sw]').forEach(b => b.onclick = () => {
     const g = b.dataset.sw;
@@ -823,6 +833,13 @@ function tradeLinks(p) {
     if (['eth', 'base', 'polygon_pos'].includes(p.net)) out.push(['phantom', '👻 Phantom', t('tr_mm', 'Uniswap').replace('MetaMask', 'Phantom'), `https://phantom.app/ul/browse/${e(u)}?ref=${e('https://app.uniswap.org')}`]);
     out.push(['web', '🦄 Uniswap', t('tr_browser'), u]);
   }
+  if (WEB) return out.map(l => {
+    let u = l[3];
+    const m = u.match(/^https:\/\/phantom\.app\/ul\/browse\/([^?]+)/);
+    if (m) u = decodeURIComponent(m[1]);
+    if (u.startsWith('https://link.metamask.io/dapp/')) u = 'https://' + u.slice('https://link.metamask.io/dapp/'.length);
+    return [l[0], l[1].replace('👻 Phantom', '🪐 Jupiter').replace('🦊 MetaMask', '🌐 Web'), t('tr_web'), u];
+  }).filter((l, i, a) => a.findIndex(x => x[3] === l[3]) === i);
   return out;
 }
 const W = {addr: '', lamports: null, tok: null, dec: null};
@@ -924,7 +941,7 @@ async function initSwap(p) {
 const Wallet_SOL = 'So11111111111111111111111111111111111111112';
 function errText(e) {
   const d = (e && e.detail) || '';
-  if (/nowallet/.test(d)) return t('sw_err_nowallet');
+  if (/nowallet/.test(d)) return t(WEB ? 'sw_err_nowallet_web' : 'sw_err_nowallet');
   if (/declin|reject|cancel|NotSubmitted/i.test(d)) return t('sw_err_cancel');
   if (e && e.message === 'rate') return t('rate');
   return t('sw_fail') + (d ? ' (' + d.slice(0, 120) + ')' : '');
@@ -1266,7 +1283,7 @@ document.addEventListener('click', e => { if (e.target.closest('[data-unlock]'))
 
 function showUnlock(reason) {
   refreshPro();
-  const feats = [['✈️', 'f_tg'], ['🚨', 'f_rug'], ['🛰️', 'f_newalert'], ['📈', 'f_spike'], ['🐋', 'f_whales'], ['📱', 'f_widget'], ['🔬', 'f_sec_unl']];
+  const feats = [['✈️', 'f_tg'], ['🚨', 'f_rug'], ['🛰️', 'f_newalert'], ['📈', 'f_spike'], ['🐋', 'f_whales'], ...(WEB ? [] : [['📱', 'f_widget']]), ['🔬', 'f_sec_unl']];
   if (isPro()) {
     openModal(`<div class="grabber"></div><span class="badge-pro">PRO</span><h3 style="margin-top:10px">✓ ${t('pro_active')}</h3>
       ${info.to ? `<p>${esc(t('licensed_to', info.to))}</p>` : ''}<ul class="feat">${feats.map(([i, k]) => `<li><span>${i}</span><span>${t(k)}</span></li>`).join('')}</ul>
@@ -1280,7 +1297,7 @@ function showUnlock(reason) {
     <p class="dim" style="font-size:12.5px">${esc(t('free_note'))}</p>
     <p style="color:var(--amber);font-size:13px">🎁 ${esc(t('bundle_note'))}</p>
     <ul class="feat">${feats.map(([i, k]) => `<li><span>${i}</span><span>${t(k)}</span></li>`).join('')}</ul>
-    <p>${esc(t('pro_how', info.price, info.email))}</p>
+    <p>${esc(t(WEB ? 'pro_how_web' : 'pro_how', info.price, info.email))}</p>
     ${(info.pay || []).map(([n, a]) => `<button class="pay" data-copy="${esc(a)}"><small>${esc(n)}</small><span>${esc(a)}</span></button>`).join('')}
     <p style="margin-bottom:4px">${t('device_code')} · <span style="font-size:12px">${t('tap_copy')}</span></p>
     <button class="code" data-copy="${esc(info.code)}">${esc(info.code)}</button>
