@@ -50,7 +50,7 @@ const T = {
     s_new_sub: "Fresh launches that match your filter",
     s_minliq: "Min. liquidity",
     s_maxrisk: "Max. risk",
-    tg_sub: "Get every alert in Telegram too",
+    tg_sub: "Every alert also in Telegram",
     tg_on: "Alerts also go to Telegram",
     tg_setup: "Set up",
     tg_title: "Telegram alerts",
@@ -98,14 +98,16 @@ const T = {
     f_rug: "Rug alarm when liquidity is pulled",
     f_newalert: "New-pool alerts with your own filter",
     f_spike: "Volume-spike alerts",
-    f_tg: "All alerts also in Telegram",
+    f_tg: "Rug, new-pool, spike & whale alerts in Telegram",
     f_widget: "Home-screen widget",
+    tg_sub_free: "Get your price alerts in Telegram – free",
+    tg_free_note: "Free: your price alerts go to Telegram. Pro adds rug alarms, new pools, volume spikes and whales.",
     sec_run: "Scan",
     bundle_note: "Bundle: PoolHawk + SpyCheck + SecretSweep Pro together for $9.99 – just mention it in your e-mail.",
     sec_quota: "%1 free scans left today",
     sec_used: "Free scans for today used up – Pro scans without limit.",
     f_sec_unl: "Unlimited security scans (Free: 3 per day)",
-    free_note: "Free includes: trending, new pools, search, all charts, unlimited watchlists, price alerts, risk check and 3 security scans a day.",
+    free_note: "Free includes: trending, new pools, search, all charts, unlimited watchlists, price alerts (also in Telegram), risk check and 3 security scans a day.",
     ago_s: '%1s', ago_m: '%1m', ago_h: '%1h', ago_d: '%1d', just_now: 'now', min_tf: 'Minute charts are Pro',
   },
   de: {
@@ -199,14 +201,16 @@ const T = {
     f_rug: "Rug-Alarm, wenn Liquidität abgezogen wird",
     f_newalert: "Neue-Pools-Alarme mit eigenem Filter",
     f_spike: "Volumen-Spike-Alarme",
-    f_tg: "Alle Alarme auch in Telegram",
+    f_tg: "Rug-, Neue-Pools-, Spike- & Wal-Alarme in Telegram",
     f_widget: "Homescreen-Widget",
+    tg_sub_free: "Deine Preis-Alarme in Telegram – gratis",
+    tg_free_note: "Free: deine Preis-Alarme gehen an Telegram. Pro sendet zusätzlich Rug-Alarme, neue Pools, Volumen-Spikes und Wale.",
     sec_run: "Scannen",
     bundle_note: "Paket: PoolHawk + SpyCheck + SecretSweep Pro zusammen für 9,99 $ – einfach in der E-Mail erwähnen.",
     sec_quota: "Heute noch %1 Gratis-Scans",
     sec_used: "Gratis-Scans für heute verbraucht – Pro scannt ohne Limit.",
     f_sec_unl: "Unbegrenzte Sicherheits-Scans (Free: 3 pro Tag)",
-    free_note: "Gratis enthalten: Trends, neue Pools, Suche, alle Charts, unbegrenzte Watchlists, Preis-Alarme, Risiko-Check und 3 Sicherheits-Scans pro Tag.",
+    free_note: "Gratis enthalten: Trends, neue Pools, Suche, alle Charts, unbegrenzte Watchlists, Preis-Alarme (auch in Telegram), Risiko-Check und 3 Sicherheits-Scans pro Tag.",
     ago_s: '%1s', ago_m: '%1m', ago_h: '%1h', ago_d: '%1T', just_now: 'jetzt', min_tf: 'Minuten-Charts sind Pro',
   },
 };
@@ -663,10 +667,10 @@ function showAlerts() {
       ${sm.newp.on ? `<div class="chips in">${opt('newp', 'net', nets, sm.newp.net, v => v === 'all' ? t('all') : netShort(v))}</div>
         <div class="chips in">${t('s_minliq')} ${opt('newp', 'minLiq', [5000, 20000, 50000, 100000], sm.newp.minLiq, fmtUsd)}</div>
         <div class="chips in">${t('s_maxrisk')} ${opt('newp', 'maxRisk', [0, 1], sm.newp.maxRisk, v => t(v ? 'r_med' : 'r_low'))}</div>` : ''}
-      <div class="set-row" style="border:0"><div><b>✈️ Telegram</b><div class="sub">${sm.tg.on && sm.tg.chat ? '✓ ' + t('tg_on') : t('tg_sub')}</div></div><button class="btn small amber" id="tgSet">${t('tg_setup')}</button></div>
     </div>
     <div class="note" style="margin:0 18px 6px">📱 ${esc(t('widget_hint'))}</div>` : lockedView('smart', 'alerts_sub', `<div class="list">${['🚨 ' + t('s_rug'), '🛰️ ' + t('s_new'), '📈 ' + t('s_spike'), '✈️ Telegram'].map(x => `<div class="alert-row"><div class="mid"><b>${x}</b><div class="sub">${t('a_active')}</div></div><span class="switch on"></span></div>`).join('')}</div>`);
-  view.innerHTML = `<div class="sec-head"><h2>${t('smart')}</h2><button class="link" id="chk">${t('check_now')}</button></div>
+  view.innerHTML = `<div class="card tg-card"><div class="set-row" style="border:0"><div><b>✈️ ${t('tg_title')}</b><div class="sub">${sm.tg.on && sm.tg.chat ? '✓ ' + t('tg_on') : t(isPro() ? 'tg_sub' : 'tg_sub_free')}</div></div><button class="btn small amber" id="tgSet">${t('tg_setup')}</button></div></div>
+    <div class="sec-head"><h2>${t('smart')}</h2><button class="link" id="chk">${t('check_now')}</button></div>
     ${smartHtml}
     <div class="sec-head"><h2>${t('alerts')} · ${al.length}</h2></div>
     ${al.length ? `<div class="list">${al.map(a => `<div class="alert-row" data-id="${esc(a.id)}">
@@ -709,7 +713,7 @@ function bridgeCall(fn) {
 function telegramDialog() {
   const sm = loadSmart();
   openModal(`<div class="grabber"></div><h3>✈️ ${t('tg_title')}</h3>
-    <ol class="steps"><li>${t('tg_s1')}</li><li>${t('tg_s2')}</li><li>${t('tg_s3')}</li></ol>
+    ${isPro() ? '' : `<p style="color:var(--amber);font-size:13px">${esc(t('tg_free_note'))}</p>`}<ol class="steps"><li>${t('tg_s1')}</li><li>${t('tg_s2')}</li><li>${t('tg_s3')}</li></ol>
     <input class="inp num" id="tgTok" placeholder="123456789:AA…" value="${esc(sm.tg.token)}" autocomplete="off" spellcheck="false">
     <div class="row-btns" style="margin-top:8px"><input class="inp num" id="tgChat" placeholder="Chat ID" value="${esc(sm.tg.chat)}"><button class="btn amber" id="tgFind" style="flex:none">${t('tg_find')}</button></div>
     <div class="msg" id="tgMsg"></div>
@@ -1056,7 +1060,7 @@ document.addEventListener('click', e => { if (e.target.closest('[data-unlock]'))
 
 function showUnlock(reason) {
   refreshPro();
-  const feats = [['🚨', 'f_rug'], ['🛰️', 'f_newalert'], ['📈', 'f_spike'], ['✈️', 'f_tg'], ['🐋', 'f_whales'], ['📱', 'f_widget'], ['🔬', 'f_sec_unl']];
+  const feats = [['✈️', 'f_tg'], ['🚨', 'f_rug'], ['🛰️', 'f_newalert'], ['📈', 'f_spike'], ['🐋', 'f_whales'], ['📱', 'f_widget'], ['🔬', 'f_sec_unl']];
   if (isPro()) {
     openModal(`<div class="grabber"></div><span class="badge-pro">PRO</span><h3 style="margin-top:10px">✓ ${t('pro_active')}</h3>
       ${info.to ? `<p>${esc(t('licensed_to', info.to))}</p>` : ''}<ul class="feat">${feats.map(([i, k]) => `<li><span>${i}</span><span>${t(k)}</span></li>`).join('')}</ul>

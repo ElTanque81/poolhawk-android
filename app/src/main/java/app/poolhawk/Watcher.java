@@ -368,7 +368,7 @@ final class Watcher {
         return u > 0 ? id.substring(0, u) : id;
     }
 
-    /** Records an alert in the in-app history, shows a notification and forwards it to Telegram if set up. */
+    /** Records an alert in the in-app history, shows a notification and forwards it to Telegram if set up (Free: price alerts only). */
     static void event(Context c, String kind, String channel, String title, String text, String net, String addr) {
         JSONArray ev = array(Pro.load(c, "events"));
         JSONArray out = new JSONArray();
@@ -381,7 +381,7 @@ final class Watcher {
         Pro.save(c, "events", out.toString());
         notify(c, channel, title, text, net, addr);
         JSONObject tg = object(Pro.load(c, "smart")).optJSONObject("tg");
-        if (Pro.isActive() && tg != null && tg.optBoolean("on") && !tg.optString("token").isEmpty() && !tg.optString("chat").isEmpty()) {
+        if ((Pro.isActive() || "price".equals(kind)) && tg != null && tg.optBoolean("on") && !tg.optString("token").isEmpty() && !tg.optString("chat").isEmpty()) {
             try {
                 String link = "https://www.geckoterminal.com/" + net + "/pools/" + addr;
                 Api.telegram(tg.optString("token"), "sendMessage", "chat_id=" + enc(tg.optString("chat"))

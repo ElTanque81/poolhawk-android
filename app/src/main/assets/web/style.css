@@ -205,3 +205,4 @@ textarea:focus,.inp:focus{border-color:rgba(255,176,32,.5)}
 .checks li span:nth-child(2){flex:1}
 .checks li.bad b{color:var(--down)}.checks li.warn b{color:var(--amber)}
 .btn.small{white-space:nowrap}
+.tg-card{margin-top:8px;border-color:rgba(55,213,255,.35);background:linear-gradient(135deg,rgba(55,213,255,.08),rgba(11,15,24,1))}

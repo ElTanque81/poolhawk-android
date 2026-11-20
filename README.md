@@ -1,6 +1,6 @@
 # PoolHawk for Android
 
-Real-time DEX tracker: trending pools, new launches, live charts, watchlists, whale trades and price alerts across Solana, Ethereum, BSC, Base, Arbitrum, Polygon, Avalanche, TON, Sui and Tron.
+Real-time DEX tracker with alerts straight to Telegram: trending pools, new launches, live charts, watchlists, whale trades and price alerts across Solana, Ethereum, BSC, Base, Arbitrum, Polygon, Avalanche, TON, Sui and Tron.
 
 Market data comes from the free public [GeckoTerminal API](https://www.geckoterminal.com/dex-api). No account, no tracking: watchlists and alerts stay on the phone.
 
@@ -13,7 +13,7 @@ Everything you expect from a DEX tracker, without limits:
 - Search by token, pair or contract address
 - Pool page: price, 5m/1h/6h/24h change, candlestick charts from 1 minute to 1 day, liquidity, FDV, buys vs. sells, latest trades, risk check
 - Unlimited watchlists with CSV export
-- Price alerts (above, below, rises by %, falls by %) with notifications, also when the app is closed
+- Price alerts (above, below, rises by %, falls by %) with notifications, also when the app is closed, and in Telegram through your own bot
 - Security scan via the free GoPlus Security API (honeypot, buy/sell tax, mint and freeze authority, owner privileges, locked liquidity, top-holder share): 3 scans a day
 
 ## Pro ($4.99 one-time)
@@ -23,7 +23,7 @@ What other DEX trackers don't do:
 - Rug alarm: notification when liquidity in a watchlist pool suddenly drops (20, 30 or 50 %)
 - New-pool alerts with your own filter (network, minimum liquidity, maximum risk)
 - Volume-spike alerts when a token trades far above its normal hourly volume
-- Every alert also in Telegram through your own bot, plus an in-app alert history
+- Rug, new-pool, volume-spike and whale alerts in Telegram too, plus an in-app alert history
 - Whale tracker: big buys and sells in watchlist pools, with optional notifications
 - Home-screen widget with the first five watchlist tokens
 - Unlimited security scans
